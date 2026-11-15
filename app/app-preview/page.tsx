@@ -3,6 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import {
+  HomeIcon,
+  BoltIcon,
+  SparklesIcon,
+  UserIcon,
+  BriefcaseIcon,
+  DownloadIcon,
+} from "../components/Icons";
 
 export default function AppPreviewPage() {
   const [currentUrl, setCurrentUrl] = useState("/");
@@ -10,11 +18,11 @@ export default function AppPreviewPage() {
   const [isRotating, setIsRotating] = useState(false);
 
   const screens = [
-    { name: "Home / Search", path: "/", icon: "🏠" },
-    { name: "Services", path: "/services", icon: "⚡" },
-    { name: "AI Assistant", path: "/ai-assistant", icon: "✨" },
-    { name: "Customer Sign In", path: "/login", icon: "👤" },
-    { name: "Provider Portal", path: "/provider/login", icon: "👷" },
+    { name: "Home / Search", path: "/", icon: HomeIcon },
+    { name: "Services", path: "/services", icon: BoltIcon },
+    { name: "AI Assistant", path: "/ai-assistant", icon: SparklesIcon },
+    { name: "Customer Sign In", path: "/login", icon: UserIcon },
+    { name: "Provider Portal", path: "/provider/login", icon: BriefcaseIcon },
   ];
 
   return (
@@ -54,7 +62,7 @@ export default function AppPreviewPage() {
               download="MasterApp.apk"
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-500/20 transition hover:brightness-110 active:scale-95"
             >
-              <span>⬇️</span>
+              <DownloadIcon className="h-4 w-4" />
               <span>Download MasterApp.apk (6.3 MB)</span>
             </a>
             <Link
@@ -72,21 +80,24 @@ export default function AppPreviewPage() {
           <div className="lg:col-span-7 flex flex-col items-center justify-center">
             {/* Quick Screen Switcher Tabs */}
             <div className="mb-5 flex flex-wrap justify-center gap-1.5 rounded-2xl border border-slate-800 bg-slate-900/90 p-1.5 backdrop-blur-xl">
-              {screens.map((s) => (
-                <button
-                  key={s.path}
-                  type="button"
-                  onClick={() => setCurrentUrl(s.path)}
-                  className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-                    currentUrl === s.path
-                      ? "bg-[#0052cc] text-white shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800"
-                  }`}
-                >
-                  <span>{s.icon}</span>
-                  <span>{s.name}</span>
-                </button>
-              ))}
+              {screens.map((s) => {
+                const Icon = s.icon;
+                return (
+                  <button
+                    key={s.path}
+                    type="button"
+                    onClick={() => setCurrentUrl(s.path)}
+                    className={`flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+                      currentUrl === s.path
+                        ? "bg-[#0052cc] text-white shadow-sm"
+                        : "text-slate-400 hover:text-white hover:bg-slate-800"
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    <span>{s.name}</span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* REALISTIC ANDROID HARDWARE CASING */}

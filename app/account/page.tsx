@@ -5,6 +5,15 @@ import { supabase } from "@/lib/supabase";
 import {
 normalizeMobile,
 } from "@/lib/auth";
+import {
+  LoaderIcon,
+  WrenchIcon,
+  SearchIcon,
+  SettingsIcon,
+  BriefcaseIcon,
+  MessageSquareIcon,
+  CalendarIcon,
+} from "@/app/components/Icons";
 type Customer = {
   id: string;
   name?: string;
@@ -448,10 +457,8 @@ localStorage.removeItem(
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-        <div className="rounded-2xl border border-slate-200 bg-white px-8 py-7 text-center shadow-sm">
-          <div className="mb-3 text-3xl">
-            ⏳
-          </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xs">
+          <LoaderIcon className="mx-auto mb-3 h-8 w-8 text-blue-600" />
           <h2 className="text-lg font-bold text-slate-900">
             Loading your account...
           </h2>
@@ -635,8 +642,9 @@ localStorage.removeItem(
           <div className="rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 p-6 text-white shadow-lg md:p-8">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-medium">
-                  🛠️ Service Provider
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-xs">
+                  <WrenchIcon className="w-3.5 h-3.5" />
+                  <span>Service Provider</span>
                 </div>
                 <h2 className="mt-3 text-2xl font-bold md:text-3xl">
                   Have a skill or service?
@@ -695,57 +703,57 @@ localStorage.removeItem(
         <section className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href="/bookings"
-            className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:shadow-md"
+            className="group rounded-2xl border border-slate-200/90 bg-white p-5 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
           >
-            <div className="text-2xl">
-              📅
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100 transition group-hover:scale-105">
+              <CalendarIcon className="h-5 w-5" />
             </div>
-            <h3 className="mt-3 font-bold text-slate-900">
+            <h3 className="mt-4 font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
               My Bookings
             </h3>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-xs text-slate-500">
               View your service bookings.
             </p>
           </Link>
           <Link
             href="/messages"
-            className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:shadow-md"
+            className="group rounded-2xl border border-slate-200/90 bg-white p-5 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
           >
-            <div className="text-2xl">
-              💬
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 transition group-hover:scale-105">
+              <MessageSquareIcon className="h-5 w-5" />
             </div>
-            <h3 className="mt-3 font-bold text-slate-900">
+            <h3 className="mt-4 font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
               Messages
             </h3>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-xs text-slate-500">
               Chat with service providers.
             </p>
           </Link>
           <Link
             href="/services"
-            className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:shadow-md"
+            className="group rounded-2xl border border-slate-200/90 bg-white p-5 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
           >
-            <div className="text-2xl">
-              🔎
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 transition group-hover:scale-105">
+              <SearchIcon className="h-5 w-5" />
             </div>
-            <h3 className="mt-3 font-bold text-slate-900">
+            <h3 className="mt-4 font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
               Find Services
             </h3>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-xs text-slate-500">
               Find providers near you.
             </p>
           </Link>
           <Link
             href="/account/edit"
-            className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:shadow-md"
+            className="group rounded-2xl border border-slate-200/90 bg-white p-5 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
           >
-            <div className="text-2xl">
-              ⚙️
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-50 text-slate-600 border border-slate-200 transition group-hover:scale-105">
+              <SettingsIcon className="h-5 w-5" />
             </div>
-            <h3 className="mt-3 font-bold text-slate-900">
+            <h3 className="mt-4 font-bold text-slate-900 group-hover:text-slate-900 transition-colors">
               Edit Account
             </h3>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-xs text-slate-500">
               Update your account details.
             </p>
           </Link>

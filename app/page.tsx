@@ -7,20 +7,29 @@ import { supabase } from "../lib/supabase";
 import {
   SparklesIcon,
   SearchIcon,
+  SearchXIcon,
+  LoaderIcon,
   MapPinIcon,
   ShieldCheckIcon,
   BoltIcon,
+  WrenchIcon,
+  SnowflakeIcon,
+  HammerIcon,
+  PaintRollerIcon,
   StarIcon,
   BriefcaseIcon,
   CurrencyRupeeIcon,
   ArrowUpRightIcon,
   PhoneIcon,
+  PhoneCallIcon,
   VerifiedBadge,
   OnlineStatusDot,
   TradeServiceIcon,
   TradeBadgeContainer,
   CrosshairIcon,
   CalendarIcon,
+  CalendarCheckIcon,
+  ListIcon,
 } from "./components/Icons";
 type Provider = {
   id: string;
@@ -2452,20 +2461,20 @@ function HomePageContent() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-slate-300">
             <span className="font-semibold text-slate-400">Popular:</span>
             {[
-              "Electrician",
-              "Plumber",
-              "AC Repair",
-              "Cleaning",
-              "Carpenter",
-              "Painter",
-            ].map((item) => (
+              { name: "Electrician", icon: BoltIcon },
+              { name: "Plumber", icon: WrenchIcon },
+              { name: "AC Repair", icon: SnowflakeIcon },
+              { name: "Cleaning", icon: SparklesIcon },
+              { name: "Carpenter", icon: HammerIcon },
+              { name: "Painter", icon: PaintRollerIcon },
+            ].map(({ name, icon: IconComp }) => (
               <button
-                key={item}
+                key={name}
                 type="button"
                 onClick={() => {
-                  setSearch(item);
+                  setSearch(name);
                   router.push(
-                    `/?search=${encodeURIComponent(item)}`,
+                    `/?search=${encodeURIComponent(name)}`,
                     { scroll: false }
                   );
                   window.setTimeout(() => {
@@ -2477,9 +2486,10 @@ function HomePageContent() {
                       });
                   }, 50);
                 }}
-                className="rounded-full bg-white/10 px-3.5 py-1.5 font-medium text-blue-100 border border-white/10 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 font-medium text-blue-100 border border-white/10 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white hover:scale-105 active:scale-95"
               >
-                {item}
+                <IconComp className="w-3.5 h-3.5 shrink-0 opacity-80" />
+                <span>{name}</span>
               </button>
             ))}
           </div>
@@ -2669,12 +2679,13 @@ function HomePageContent() {
       ========================================= */}
       {loading && (
         <section className="mx-auto max-w-6xl px-4 pt-6">
-          <div className="rounded-2xl bg-white p-6 text-center shadow-sm">
-            <div className="text-3xl">
-              ⏳
-            </div>
-            <p className="mt-2 font-medium text-gray-600">
-              Loading services...
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-8 text-center shadow-xs">
+            <LoaderIcon className="h-7 w-7 text-blue-600 mx-auto" />
+            <p className="mt-3 font-semibold text-slate-800">
+              Finding certified specialists...
+            </p>
+            <p className="mt-1 text-xs text-slate-400">
+              Connecting to live service network
             </p>
           </div>
         </section>
@@ -2740,7 +2751,7 @@ function HomePageContent() {
                   </option>
                 </select>
                 {/* MAP / LIST TOGGLE */}
-                <div className="flex items-center rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
+                <div className="flex items-center rounded-xl border border-slate-200 bg-white p-1 shadow-2xs">
                   <button
                     type="button"
                     onClick={() =>
@@ -2749,13 +2760,14 @@ function HomePageContent() {
                     aria-pressed={
                       providerViewMode === "list"
                     }
-                    className={`rounded-md px-3 py-1.5 text-sm font-semibold transition ${
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
                       providerViewMode === "list"
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "text-gray-600 hover:bg-gray-100"
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "text-slate-600 hover:bg-slate-50"
                     }`}
                   >
-                    ☰ List
+                    <ListIcon className="w-3.5 h-3.5" />
+                    <span>List</span>
                   </button>
                   <button
                     type="button"
@@ -2765,13 +2777,14 @@ function HomePageContent() {
                     aria-pressed={
                       providerViewMode === "map"
                     }
-                    className={`rounded-md px-3 py-1.5 text-sm font-semibold transition ${
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
                       providerViewMode === "map"
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "text-gray-600 hover:bg-gray-100"
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "text-slate-600 hover:bg-slate-50"
                     }`}
                   >
-                    📍 Map
+                    <MapPinIcon className="w-3.5 h-3.5" />
+                    <span>Map</span>
                   </button>
                 </div>
                 <button
@@ -2817,8 +2830,8 @@ function HomePageContent() {
                     ) && (
                       <div className="absolute inset-0 z-[600] flex items-center justify-center bg-white/90 p-6 text-center backdrop-blur-[2px]">
                         <div className="max-w-sm">
-                          <div className="text-4xl">
-                            📍
+                          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 shadow-2xs">
+                            <MapPinIcon className="h-7 w-7" />
                           </div>
                           <p className="mt-3 font-bold text-gray-900">
                             Map location is not available
@@ -2994,10 +3007,10 @@ function HomePageContent() {
                           {provider.mobile && (
                             <a
                               href={`tel:${provider.mobile}`}
-                              className="inline-flex items-center justify-center gap-1 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2.5 text-center text-xs font-bold text-emerald-700 shadow-2xs transition hover:bg-emerald-100 hover:border-emerald-400 active:scale-98"
+                              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2.5 text-center text-xs font-bold text-emerald-800 shadow-2xs transition hover:bg-emerald-100 hover:border-emerald-400 active:scale-98"
                               title={`Call ${provider.name}: ${provider.mobile}`}
                             >
-                              <PhoneIcon className="h-3.5 w-3.5 text-emerald-600" />
+                              <PhoneCallIcon className="h-3.5 w-3.5 text-emerald-600" />
                               <span>Call</span>
                             </a>
                           )}
@@ -3009,10 +3022,10 @@ function HomePageContent() {
                           </Link>
                           <Link
                             href={`/provider/${provider.id}/book`}
-                            className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-2.5 text-center text-xs font-bold text-white shadow-sm shadow-blue-600/25 transition hover:from-blue-700 hover:to-indigo-700 flex items-center justify-center gap-1"
+                            className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-2.5 text-center text-xs font-bold text-white shadow-sm shadow-blue-600/25 transition hover:from-blue-700 hover:to-indigo-700 flex items-center justify-center gap-1.5"
                           >
+                            <CalendarCheckIcon className="w-3.5 h-3.5" />
                             <span>Book Now</span>
-                            <ArrowUpRightIcon className="w-3.5 h-3.5" />
                           </Link>
                         </div>
                       </div>
@@ -3022,17 +3035,23 @@ function HomePageContent() {
               </div>
               )
             ) : (
-              <div className="mb-8 rounded-2xl border bg-white p-6 text-center shadow-sm">
-                <div className="text-3xl">
-                  🔎
+              <div className="mb-8 rounded-2xl border border-slate-200/90 bg-white p-8 text-center shadow-xs">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 border border-slate-200/80 shadow-2xs">
+                  <SearchXIcon className="h-7 w-7" />
                 </div>
-                <p className="mt-2 font-semibold text-gray-800">
+                <h3 className="mt-3.5 text-base font-bold text-slate-900">
                   No matching providers found
+                </h3>
+                <p className="mt-1 text-sm text-slate-500 max-w-sm mx-auto">
+                  Try searching for another service, provider name, city, area or PIN code.
                 </p>
-                <p className="mt-1 text-sm text-gray-500">
-                  Try another service, provider
-                  name, city, area or PIN code.
-                </p>
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="mt-4 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:border-slate-300"
+                >
+                  Clear Filters
+                </button>
               </div>
             )}
           </section>
@@ -3139,22 +3158,20 @@ function HomePageContent() {
               )}
             </>
           ) : (
-            <div className="rounded-3xl border bg-white px-6 py-16 text-center shadow-sm">
-              <div className="text-5xl">
-                🔎
+            <div className="rounded-3xl border border-slate-200/90 bg-white px-6 py-16 text-center shadow-xs">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 shadow-2xs">
+                <SearchXIcon className="h-8 w-8" />
               </div>
-              <h3 className="mt-5 text-xl font-bold text-gray-900">
+              <h3 className="mt-5 text-xl font-bold text-slate-900">
                 No services found
               </h3>
-              <p className="mx-auto mt-2 max-w-md text-gray-500">
-                We could not find a service
-                matching your search. Try another
-                service, provider name, or city.
+              <p className="mx-auto mt-2 max-w-md text-slate-500 text-sm">
+                We could not find a service matching your search. Try another service, provider name, or city.
               </p>
               <button
                 type="button"
                 onClick={clearSearch}
-                className="mt-6 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
+                className="mt-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-sm shadow-blue-600/25 hover:from-blue-700 hover:to-indigo-700"
               >
                 View All Services
               </button>
@@ -3461,12 +3478,14 @@ function HomePageContent() {
                   Loading reviews...
                 </div>
               ) : reviewModal.reviews.length === 0 ? (
-                <div className="rounded-xl border border-dashed p-8 text-center">
-                  <div className="text-3xl">⭐</div>
-                  <p className="mt-3 font-semibold text-gray-900">
+                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-500 border border-amber-200/60 shadow-2xs">
+                    <StarIcon className="w-6 h-6" filled={false} />
+                  </div>
+                  <p className="mt-3 font-semibold text-slate-900">
                     No published reviews yet
                   </p>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-slate-500">
                     This provider has not received a published customer review.
                   </p>
                 </div>

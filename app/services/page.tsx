@@ -7,6 +7,8 @@ import { supabase } from "../../lib/supabase";
 import {
   SparklesIcon,
   SearchIcon,
+  SearchXIcon,
+  LoaderIcon,
   CrosshairIcon,
   MapPinIcon,
   TradeBadgeContainer,
@@ -19,6 +21,9 @@ import {
   ArrowUpRightIcon,
   ShieldCheckIcon,
   PhoneIcon,
+  PhoneCallIcon,
+  CalendarCheckIcon,
+  ListIcon,
 } from "../components/Icons";
 type Provider = {
   id: string;
@@ -2619,12 +2624,13 @@ function ServicesPageContent() {
       ========================================= */}
       {loading && (
         <section className="mx-auto max-w-6xl px-4 pt-6">
-          <div className="rounded-2xl bg-white p-6 text-center shadow-sm">
-            <div className="text-3xl">
-              ⏳
-            </div>
-            <p className="mt-2 font-medium text-gray-600">
-              Loading services...
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-8 text-center shadow-xs">
+            <LoaderIcon className="h-7 w-7 text-blue-600 mx-auto" />
+            <p className="mt-3 font-semibold text-slate-800">
+              Finding certified specialists...
+            </p>
+            <p className="mt-1 text-xs text-slate-400">
+              Connecting to live service network
             </p>
           </div>
         </section>
@@ -2947,17 +2953,23 @@ function ServicesPageContent() {
               </div>
               )
             ) : (
-              <div className="mb-8 rounded-2xl border bg-white p-6 text-center shadow-sm">
-                <div className="text-3xl">
-                  🔎
+              <div className="mb-8 rounded-2xl border border-slate-200/90 bg-white p-8 text-center shadow-xs">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 border border-slate-200/80 shadow-2xs">
+                  <SearchXIcon className="h-7 w-7" />
                 </div>
-                <p className="mt-2 font-semibold text-gray-800">
+                <h3 className="mt-3.5 text-base font-bold text-slate-900">
                   No matching providers found
+                </h3>
+                <p className="mt-1 text-sm text-slate-500 max-w-sm mx-auto">
+                  Try searching for another service, provider name, city, area or PIN code.
                 </p>
-                <p className="mt-1 text-sm text-gray-500">
-                  Try another service, provider
-                  name, city, area or PIN code.
-                </p>
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="mt-4 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:border-slate-300"
+                >
+                  Clear Filters
+                </button>
               </div>
             )}
           </section>
@@ -3254,12 +3266,14 @@ function ServicesPageContent() {
                   Loading reviews...
                 </div>
               ) : reviewModal.reviews.length === 0 ? (
-                <div className="rounded-xl border border-dashed p-8 text-center">
-                  <div className="text-3xl">⭐</div>
-                  <p className="mt-3 font-semibold text-gray-900">
+                <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-500 border border-amber-200/60 shadow-2xs">
+                    <StarIcon className="w-6 h-6" filled={false} />
+                  </div>
+                  <p className="mt-3 font-semibold text-slate-900">
                     No published reviews yet
                   </p>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-slate-500">
                     This provider has not received a published customer review.
                   </p>
                 </div>
@@ -3368,7 +3382,7 @@ function ServicesPageContent() {
             {/* SEARCH / CURRENT LOCATION BAR */}
             <div className="border-b bg-white p-3 sm:p-4">
               <div className="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5">
-                <span className="text-lg">🔎</span>
+                <SearchIcon className="h-5 w-5 text-slate-400 shrink-0" />
                 <input
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}

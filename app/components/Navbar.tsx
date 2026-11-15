@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import NotificationBell from "./NotificationBell";
 import { supabase } from "@/lib/supabase";
+import { SparklesIcon, SmartphoneIcon, MenuIcon, XIcon } from "./Icons";
 type User = {
   id: string;
   name: string;
@@ -301,7 +302,7 @@ export default function Navbar() {
                   href="/ai-assistant"
                   className={`flex items-center gap-1.5 ${desktopLinkClass("/ai-assistant")}`}
                 >
-                  <span className="text-blue-600">✨</span>
+                  <SparklesIcon className="w-4 h-4 text-blue-600" />
                   <span>AI Assistant</span>
                 </Link>
                 <Link
@@ -378,7 +379,7 @@ export default function Navbar() {
                   href="/ai-assistant"
                   className={`flex items-center gap-1.5 ${desktopLinkClass("/ai-assistant")}`}
                 >
-                  <span className="text-blue-600">✨</span>
+                  <SparklesIcon className="w-4 h-4 text-blue-600" />
                   <span>AI Assistant</span>
                 </Link>
                 <Link
@@ -393,7 +394,7 @@ export default function Navbar() {
                   title="Download Master App for Android"
                   className="flex items-center gap-1.5 rounded-xl border border-emerald-200/90 bg-emerald-50/80 px-3 py-2 text-xs font-bold text-emerald-800 shadow-2xs transition hover:bg-emerald-100 hover:border-emerald-300 active:scale-95"
                 >
-                  <span className="text-sm">🤖</span>
+                  <SmartphoneIcon className="h-4 w-4 text-emerald-600" />
                   <span>Android App</span>
                 </a>
                 <div className="ml-2 flex items-center gap-2">
@@ -423,11 +424,9 @@ export default function Navbar() {
             aria-label="Toggle navigation menu"
           >
             {menuOpen ? (
-              <span className="text-lg font-bold">✕</span>
+              <XIcon className="h-5 w-5" />
             ) : (
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <MenuIcon className="h-5 w-5" />
             )}
           </button>
         )}
@@ -527,7 +526,7 @@ export default function Navbar() {
                   className={mobileLinkClass("/ai-assistant")}
                 >
                   <span className="flex items-center gap-2">
-                    <span>✨</span>
+                    <SparklesIcon className="w-4 h-4 text-blue-600" />
                     <span>AI Assistant</span>
                   </span>
                 </Link>
@@ -615,7 +614,7 @@ export default function Navbar() {
                   className={mobileLinkClass("/ai-assistant")}
                 >
                   <span className="flex items-center gap-2">
-                    <span>✨</span>
+                    <SparklesIcon className="w-4 h-4 text-blue-600" />
                     <span>AI Assistant</span>
                   </span>
                 </Link>
@@ -632,7 +631,7 @@ export default function Navbar() {
                     download="MasterApp.apk"
                     className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 px-4 py-2.5 text-center text-xs font-extrabold text-white shadow-sm transition hover:brightness-105 active:scale-98"
                   >
-                    <span>🤖</span>
+                    <SmartphoneIcon className="w-4 h-4 text-white" />
                     <span>Download Official Android App (.apk)</span>
                   </a>
                   <Link

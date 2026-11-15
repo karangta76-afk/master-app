@@ -18,6 +18,7 @@ import {
   CheckCircleIcon,
   ArrowUpRightIcon,
   ShieldCheckIcon,
+  BoltIcon,
 } from "@/app/components/Icons";
 
 type Customer = {
@@ -411,7 +412,10 @@ export default function CustomerLoginPage() {
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              ⚡ Instant OTP
+              <span className="inline-flex items-center gap-1.5">
+                <BoltIcon className="w-3.5 h-3.5 text-amber-500" />
+                <span>Instant OTP</span>
+              </span>
             </button>
           </div>
 
