@@ -2311,7 +2311,7 @@ function HomePageContent() {
       {/* =========================================
           HERO SECTION
       ========================================= */}
-      <section className="relative overflow-hidden bg-slate-950 px-4 text-white bg-subtle-grid-dark -mt-20 sm:-mt-24 pt-28 sm:pt-36 pb-20 sm:pb-28">
+      <section className="relative overflow-hidden bg-slate-950 px-4 text-white bg-subtle-grid-dark pt-28 sm:pt-36 pb-20 sm:pb-28">
         {/* Luxury Multi-Color Ambient Radial Orbs */}
         <div className="pointer-events-none absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-[#0052cc]/25 blur-[140px]" />
         <div className="pointer-events-none absolute top-10 right-1/4 h-[400px] w-[400px] rounded-full bg-[#f59e0b]/20 blur-[130px]" />

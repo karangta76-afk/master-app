@@ -2331,7 +2331,7 @@ function ServicesPageContent() {
       {/* =========================================
           HERO (AGENCY-GRADE AMBIENT LIGHTING)
       ========================================= */}
-      <section className="relative overflow-hidden bg-slate-950 px-4 text-white -mt-20 sm:-mt-24 pt-28 sm:pt-36 pb-14 sm:pb-20">
+      <section className="relative overflow-hidden bg-slate-950 px-4 text-white pt-28 sm:pt-36 pb-14 sm:pb-20">
         {/* AMBIENT RADIAL LIGHTING */}
         <div className="pointer-events-none absolute -top-40 left-1/2 h-[450px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-[#0052cc]/30 via-indigo-600/20 to-[#f59e0b]/25 blur-[130px]" />
         <div className="pointer-events-none absolute -bottom-20 right-10 h-72 w-72 rounded-full bg-indigo-500/10 blur-[100px]" />

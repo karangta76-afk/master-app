@@ -258,7 +258,7 @@ export default function ServiceProvidersPage() {
   return (
     <main className="min-h-screen bg-slate-50/60 pb-20">
       {/* HERO HEADER */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950 px-4 text-white -mt-20 sm:-mt-24 pt-28 sm:pt-36 pb-16 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-blue-950 px-4 text-white pt-28 sm:pt-36 pb-16 sm:px-6 lg:px-8">
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute top-0 right-1/4 h-80 w-80 rounded-full bg-blue-500/15 blur-3xl" />
           <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" />
