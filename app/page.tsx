@@ -2311,7 +2311,7 @@ function HomePageContent() {
       {/* =========================================
           HERO SECTION
       ========================================= */}
-      <section className="relative overflow-hidden bg-slate-950 px-4 py-20 text-white sm:py-28 bg-subtle-grid-dark">
+      <section className="relative overflow-hidden bg-slate-950 px-4 text-white bg-subtle-grid-dark -mt-20 sm:-mt-24 pt-28 sm:pt-36 pb-20 sm:pb-28">
         {/* Luxury Multi-Color Ambient Radial Orbs */}
         <div className="pointer-events-none absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-[#0052cc]/25 blur-[140px]" />
         <div className="pointer-events-none absolute top-10 right-1/4 h-[400px] w-[400px] rounded-full bg-[#f59e0b]/20 blur-[130px]" />
@@ -2874,11 +2874,23 @@ function HomePageContent() {
                                 </h3>
                                 <VerifiedBadge size="xs" />
                               </div>
-                              <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 border border-blue-200/60">
-                                <span className="truncate">
-                                  {provider.service}
+                              <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                                <span className="inline-flex max-w-full items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 border border-blue-200/60">
+                                  <span className="truncate">
+                                    {provider.service}
+                                  </span>
                                 </span>
-                              </span>
+                                {provider.mobile && (
+                                  <a
+                                    href={`tel:${provider.mobile}`}
+                                    className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-800 border border-emerald-200/70 transition hover:bg-emerald-100"
+                                    title={`Call ${provider.name}: ${provider.mobile}`}
+                                  >
+                                    <PhoneCallIcon className="h-3 w-3 text-emerald-600 shrink-0" />
+                                    <span className="font-mono">{provider.mobile}</span>
+                                  </a>
+                                )}
+                              </div>
                             </div>
                           </div>
                           <OnlineStatusDot 
@@ -2980,25 +2992,37 @@ function HomePageContent() {
                           );
                         })()}
                         <div className="mt-4 grid grid-cols-2 gap-2">
-                          {provider.experience && (
-                            <div className="rounded-xl bg-slate-50 p-2.5 border border-slate-100">
-                              <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                                <BriefcaseIcon className="w-3 h-3 text-slate-400" />
-                                <span>Experience</span>
-                              </div>
-                              <p className="mt-1 truncate text-xs font-bold text-slate-800">
-                                {provider.experience}
-                              </p>
+                          <div className="rounded-xl bg-slate-50 p-2.5 border border-slate-100">
+                            <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                              <BriefcaseIcon className="w-3 h-3 text-slate-400" />
+                              <span>Experience</span>
                             </div>
-                          )}
-                          {provider.price && (
+                            <p className="mt-1 truncate text-xs font-bold text-slate-800">
+                              {provider.experience || "Verified Pro"}
+                            </p>
+                          </div>
+                          {provider.mobile ? (
+                            <a
+                              href={`tel:${provider.mobile}`}
+                              className="group/call rounded-xl bg-emerald-50/70 p-2.5 border border-emerald-200/70 transition hover:bg-emerald-100/80"
+                              title={`Call ${provider.name}`}
+                            >
+                              <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                                <PhoneCallIcon className="w-3 h-3 text-emerald-600" />
+                                <span>Direct Contact</span>
+                              </div>
+                              <p className="mt-1 truncate text-xs font-bold text-emerald-900 font-mono">
+                                {provider.mobile}
+                              </p>
+                            </a>
+                          ) : (
                             <div className="rounded-xl bg-slate-50 p-2.5 border border-slate-100">
                               <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                                <CurrencyRupeeIcon className="w-3 h-3 text-slate-400" />
-                                <span>Starting Price</span>
+                                <ShieldCheckIcon className="w-3 h-3 text-slate-400" />
+                                <span>Verification</span>
                               </div>
                               <p className="mt-1 truncate text-xs font-bold text-slate-800">
-                                {provider.price}
+                                KYC Verified
                               </p>
                             </div>
                           )}
@@ -3085,7 +3109,7 @@ function HomePageContent() {
           0 ? (
             <>
               {/* SERVICE CARDS */}
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
                 {visibleCategories.map(
                   (category) => (
                     <Link
@@ -3096,35 +3120,37 @@ function HomePageContent() {
                       href={`/services/${slugify(
                         category.name
                       )}`}
-                      className="group relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xs transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5"
+                      className="group relative flex flex-col justify-between overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5"
                     >
-                      <div className="flex items-center justify-between">
-                        <TradeBadgeContainer service={category.name} size="md" />
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                            category.count > 0
-                              ? "bg-slate-100 text-slate-700 border border-slate-200/60"
-                              : "bg-amber-50 text-amber-700 border border-amber-200/60"
-                          }`}
-                        >
-                          {category.count} {category.count === 1 ? "Specialist" : "Specialists"}
-                        </span>
+                      <div>
+                        <div className="flex items-center justify-between gap-1.5">
+                          <TradeBadgeContainer service={category.name} size="sm" />
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold truncate ${
+                              category.count > 0
+                                ? "bg-slate-100 text-slate-700 border border-slate-200/60"
+                                : "bg-amber-50 text-amber-700 border border-amber-200/60"
+                            }`}
+                          >
+                            {category.count} {category.count === 1 ? "Pro" : "Pros"}
+                          </span>
+                        </div>
+                        <h3 className="mt-2.5 truncate text-sm sm:text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                          {category.name}
+                        </h3>
+                        <p className="mt-1 line-clamp-1 text-xs text-slate-500 leading-normal">
+                          {category.description ||
+                            `Find verified ${category.name.toLowerCase()} experts.`}
+                        </p>
                       </div>
-                      <h3 className="mt-5 text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
-                        {category.name}
-                      </h3>
-                      <p className="mt-2 min-h-[40px] text-sm text-slate-500 leading-relaxed">
-                        {category.description ||
-                          `Find and book certified ${category.name.toLowerCase()} experts near you.`}
-                      </p>
-                      <div className="mt-5 flex items-center justify-between pt-4 border-t border-slate-100">
-                        <span className="text-xs font-bold text-blue-600 group-hover:text-blue-700 flex items-center gap-1">
-                          <span>Explore Specialists</span>
-                          <ArrowUpRightIcon className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      <div className="mt-3 flex items-center justify-between pt-2.5 border-t border-slate-100">
+                        <span className="text-[11px] sm:text-xs font-bold text-blue-600 group-hover:text-blue-700 flex items-center gap-1">
+                          <span>Explore</span>
+                          <ArrowUpRightIcon className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                         </span>
                         {category.count === 0 && (
-                          <span className="text-[11px] font-medium text-slate-400">
-                            Expanding soon
+                          <span className="text-[10px] font-medium text-slate-400">
+                            Soon
                           </span>
                         )}
                       </div>

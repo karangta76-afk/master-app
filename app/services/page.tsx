@@ -2331,7 +2331,7 @@ function ServicesPageContent() {
       {/* =========================================
           HERO (AGENCY-GRADE AMBIENT LIGHTING)
       ========================================= */}
-      <section className="relative overflow-hidden bg-slate-950 px-4 py-14 text-white sm:py-20">
+      <section className="relative overflow-hidden bg-slate-950 px-4 text-white -mt-20 sm:-mt-24 pt-28 sm:pt-36 pb-14 sm:pb-20">
         {/* AMBIENT RADIAL LIGHTING */}
         <div className="pointer-events-none absolute -top-40 left-1/2 h-[450px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-[#0052cc]/30 via-indigo-600/20 to-[#f59e0b]/25 blur-[130px]" />
         <div className="pointer-events-none absolute -bottom-20 right-10 h-72 w-72 rounded-full bg-indigo-500/10 blur-[100px]" />
@@ -2817,9 +2817,21 @@ function ServicesPageContent() {
                                 </h3>
                                 <VerifiedBadge />
                               </div>
-                              <span className="mt-1 inline-flex max-w-full items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-blue-200/60">
-                                <span className="truncate">{provider.service}</span>
-                              </span>
+                              <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                                <span className="inline-flex max-w-full items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-blue-200/60">
+                                  <span className="truncate">{provider.service}</span>
+                                </span>
+                                {provider.mobile && (
+                                  <a
+                                    href={`tel:${provider.mobile}`}
+                                    className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-800 border border-emerald-200/70 transition hover:bg-emerald-100"
+                                    title={`Call ${provider.name}: ${provider.mobile}`}
+                                  >
+                                    <PhoneCallIcon className="h-3 w-3 text-emerald-600 shrink-0" />
+                                    <span className="font-mono">{provider.mobile}</span>
+                                  </a>
+                                )}
+                              </div>
                             </div>
                           </div>
                           <OnlineStatusDot online={provider.availability === "Available"} />
@@ -2898,25 +2910,37 @@ function ServicesPageContent() {
                           );
                         })()}
                         <div className="mt-4 grid grid-cols-2 gap-2">
-                          {provider.experience && (
+                          <div className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2">
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                              Experience
+                            </p>
+                            <p className="mt-0.5 flex items-center truncate text-xs font-bold text-slate-800">
+                              <BriefcaseIcon className="mr-1 h-3.5 w-3.5 text-slate-400 shrink-0" />
+                              {provider.experience || "Verified Pro"}
+                            </p>
+                          </div>
+                          {provider.mobile ? (
+                            <a
+                              href={`tel:${provider.mobile}`}
+                              className="group/call rounded-xl border border-emerald-200/70 bg-emerald-50/70 px-3 py-2 transition hover:bg-emerald-100/80"
+                              title={`Call ${provider.name}`}
+                            >
+                              <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
+                                Direct Phone
+                              </p>
+                              <p className="mt-0.5 flex items-center truncate text-xs font-bold text-emerald-900 font-mono">
+                                <PhoneCallIcon className="mr-1 h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                                {provider.mobile}
+                              </p>
+                            </a>
+                          ) : (
                             <div className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2">
                               <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                                Experience
+                                Verification
                               </p>
                               <p className="mt-0.5 flex items-center truncate text-xs font-bold text-slate-800">
-                                <BriefcaseIcon className="mr-1 h-3.5 w-3.5 text-slate-400 shrink-0" />
-                                {provider.experience}
-                              </p>
-                            </div>
-                          )}
-                          {provider.price && (
-                            <div className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2">
-                              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                                Starting At
-                              </p>
-                              <p className="mt-0.5 flex items-center truncate text-xs font-bold text-slate-800">
-                                <CurrencyRupeeIcon className="mr-0.5 h-3.5 w-3.5 text-slate-400 shrink-0" />
-                                {provider.price}
+                                <ShieldCheckIcon className="mr-1 h-3.5 w-3.5 text-slate-400 shrink-0" />
+                                KYC Verified
                               </p>
                             </div>
                           )}
@@ -3003,44 +3027,43 @@ function ServicesPageContent() {
           0 ? (
             <>
               {/* SERVICE CARDS */}
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
                 {visibleCategories.map(
                   (category) => (
                     <Link
                       key={category.id || category.name}
                       href={`/services/${slugify(category.name)}`}
-                      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm ring-1 ring-slate-900/5 transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 hover:shadow-xl"
+                      className="group relative flex flex-col justify-between overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-500/5"
                     >
                       <div>
-                        <div className="flex items-center justify-between">
-                          <TradeBadgeContainer serviceName={category.name} size="md" />
+                        <div className="flex items-center justify-between gap-1.5">
+                          <TradeBadgeContainer serviceName={category.name} size="sm" />
                           <span
-                            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                            className={`rounded-full px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold truncate ${
                               category.count > 0
-                                ? "bg-slate-100 text-slate-700"
-                                : "bg-amber-50 text-amber-700 ring-1 ring-amber-200/50"
+                                ? "bg-slate-100 text-slate-700 border border-slate-200/60"
+                                : "bg-amber-50 text-amber-700 border border-amber-200/60"
                             }`}
                           >
-                            {category.count}{" "}
-                            {category.count === 1 ? "Expert" : "Experts"}
+                            {category.count} {category.count === 1 ? "Pro" : "Pros"}
                           </span>
                         </div>
-                        <h3 className="mt-5 text-base font-bold text-slate-900 transition-colors group-hover:text-blue-600">
+                        <h3 className="mt-2.5 truncate text-sm sm:text-base font-bold text-slate-900 transition-colors group-hover:text-blue-600">
                           {category.name}
                         </h3>
-                        <p className="mt-1.5 min-h-[38px] text-xs leading-relaxed text-slate-500">
+                        <p className="mt-1 line-clamp-1 text-xs text-slate-500 leading-normal">
                           {category.description ||
-                            `Find and book verified ${category.name.toLowerCase()} services.`}
+                            `Find verified ${category.name.toLowerCase()} experts.`}
                         </p>
                       </div>
-                      <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-3.5">
-                        <span className="flex items-center gap-1 text-xs font-bold text-blue-600 transition-colors group-hover:text-blue-700">
-                          <span>View Providers</span>
-                          <span className="transition-transform group-hover:translate-x-1">→</span>
+                      <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5">
+                        <span className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-blue-600 transition-colors group-hover:text-blue-700">
+                          <span>Explore</span>
+                          <ArrowUpRightIcon className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                         </span>
                         {category.count === 0 && (
-                          <span className="text-[11px] font-medium text-slate-400">
-                            Onboarding
+                          <span className="text-[10px] font-medium text-slate-400">
+                            Soon
                           </span>
                         )}
                       </div>
