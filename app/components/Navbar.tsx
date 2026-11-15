@@ -192,47 +192,47 @@ export default function Navbar() {
   function desktopLinkClass(path: string) {
     const active = pathname === path;
     return active
-      ? "rounded-xl bg-blue-50/80 text-blue-700 font-semibold px-3.5 py-2 text-sm transition-all duration-200"
-      : "rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 font-medium px-3.5 py-2 text-sm transition-all duration-200";
+      ? "rounded-xl bg-blue-500/20 text-blue-300 font-semibold px-3.5 py-2 text-sm border border-blue-400/30 shadow-xs transition-all duration-200"
+      : "rounded-xl text-slate-300 hover:text-white hover:bg-white/10 font-medium px-3.5 py-2 text-sm transition-all duration-200";
   }
 
   function mobileLinkClass(path: string) {
     const active = pathname === path;
     return active
-      ? "flex items-center justify-between rounded-xl bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700"
-      : "flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50";
+      ? "flex items-center justify-between rounded-xl bg-blue-500/20 border border-blue-400/30 px-4 py-3 text-sm font-semibold text-blue-300"
+      : "flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-colors";
   }
 
   return (
     <header className="sticky top-2 sm:top-3.5 z-50 px-3 sm:px-6 transition-all duration-300">
-      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl border border-white/60 bg-white/95 px-4 py-2.5 shadow-[0_12px_36px_rgba(0,0,0,0.18)] backdrop-blur-2xl ring-1 ring-slate-900/5 sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl border border-white/10 bg-slate-950/85 px-4 py-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-2xl ring-1 ring-white/5 sm:px-6">
         {/* BRAND LOGO */}
         <Link
           href="/"
           className="group flex items-center gap-2.5 transition-opacity hover:opacity-95"
           onClick={() => setMenuOpen(false)}
         >
-          <div className="relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white p-1 shadow-xs border border-slate-200/90 transition-transform duration-300 group-hover:scale-105">
+          <div className="relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white/10 p-1 shadow-xs border border-white/15 backdrop-blur-md transition-transform duration-300 group-hover:scale-105">
             <Image
               src="/logo-icon.png"
               alt="Master App Logo"
               width={42}
               height={42}
               priority
-              className="h-full w-full object-contain"
+              className="h-full w-full object-contain drop-shadow-md"
             />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5 leading-none">
-              <span className="text-lg font-black tracking-tight text-slate-900">
-                Master <span className="text-[#0052cc]">App</span>
+              <span className="text-lg font-black tracking-tight text-white">
+                Master <span className="text-blue-400">App</span>
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-extrabold text-amber-700 border border-amber-200/80 shadow-2xs">
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-extrabold text-amber-300 border border-amber-400/30 shadow-2xs">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#f59e0b]"></span>
                 PRO
               </span>
             </div>
-            <div className="mt-1 text-[10px] font-extrabold tracking-wider uppercase text-[#0052cc]">
+            <div className="mt-1 text-[10px] font-extrabold tracking-wider uppercase text-blue-400">
               One App. All Services.
             </div>
           </div>
@@ -282,7 +282,7 @@ export default function Navbar() {
                 </Link>
                 <button
                   onClick={logoutAdmin}
-                  className="ml-2 rounded-xl border border-red-200 bg-red-50/60 px-3.5 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100"
+                  className="ml-2 rounded-xl border border-red-500/30 bg-red-500/15 px-3.5 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/25"
                 >
                   Logout
                 </button>
@@ -302,7 +302,7 @@ export default function Navbar() {
                   href="/ai-assistant"
                   className={`flex items-center gap-1.5 ${desktopLinkClass("/ai-assistant")}`}
                 >
-                  <SparklesIcon className="w-4 h-4 text-blue-600" />
+                  <SparklesIcon className="w-4 h-4 text-blue-400" />
                   <span>AI Assistant</span>
                 </Link>
                 <Link
@@ -330,7 +330,7 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={logoutCustomer}
-                  className="ml-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                  className="ml-1 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2 text-sm font-semibold text-slate-300 transition hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-300"
                 >
                   Logout
                 </button>
@@ -359,7 +359,7 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={logoutProvider}
-                  className="ml-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                  className="ml-2 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2 text-sm font-semibold text-slate-300 transition hover:border-red-500/30 hover:bg-red-500/15 hover:text-red-300"
                 >
                   Logout
                 </button>
@@ -379,12 +379,12 @@ export default function Navbar() {
                   href="/ai-assistant"
                   className={`flex items-center gap-1.5 ${desktopLinkClass("/ai-assistant")}`}
                 >
-                  <SparklesIcon className="w-4 h-4 text-blue-600" />
+                  <SparklesIcon className="w-4 h-4 text-blue-400" />
                   <span>AI Assistant</span>
                 </Link>
                 <Link
                   href="/provider/register"
-                  className="rounded-xl px-3.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                  className="rounded-xl px-3.5 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
                 >
                   Partner With Us
                 </Link>
@@ -392,21 +392,21 @@ export default function Navbar() {
                   href="/MasterApp.apk"
                   download="MasterApp.apk"
                   title="Download Master App for Android"
-                  className="flex items-center gap-1.5 rounded-xl border border-emerald-200/90 bg-emerald-50/80 px-3 py-2 text-xs font-bold text-emerald-800 shadow-2xs transition hover:bg-emerald-100 hover:border-emerald-300 active:scale-95"
+                  className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-3 py-2 text-xs font-bold text-emerald-300 shadow-2xs transition hover:bg-emerald-500/25 hover:border-emerald-500/50 active:scale-95"
                 >
-                  <SmartphoneIcon className="h-4 w-4 text-emerald-600" />
+                  <SmartphoneIcon className="h-4 w-4 text-emerald-400" />
                   <span>Android App</span>
                 </a>
                 <div className="ml-2 flex items-center gap-2">
                   <Link
                     href="/login"
-                    className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-600/25 transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-md active:scale-[0.98]"
+                    className="rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/30 transition-all hover:brightness-110 active:scale-[0.98]"
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/provider/login"
-                    className="rounded-xl border border-slate-200/90 bg-slate-50/70 hover:bg-white hover:border-slate-300 px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-2xs transition-all active:scale-[0.98]"
+                    className="rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 hover:border-white/30 px-3.5 py-2 text-sm font-semibold text-slate-200 shadow-2xs transition-all active:scale-[0.98]"
                   >
                     Provider Login
                   </Link>
@@ -420,7 +420,7 @@ export default function Navbar() {
         {!pathname.startsWith("/admin") && (
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/90 bg-white text-slate-700 shadow-2xs transition hover:bg-slate-50 active:scale-95 md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200 shadow-2xs transition hover:bg-white/10 active:scale-95 md:hidden"
             aria-label="Toggle navigation menu"
           >
             {menuOpen ? (
@@ -434,24 +434,24 @@ export default function Navbar() {
 
       {/* MOBILE NAVIGATION DRAWER */}
       {!pathname.startsWith("/admin") && menuOpen && (
-        <div className="mt-2 mx-auto max-w-7xl rounded-2xl border border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur-xl shadow-xl md:hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="mt-2 mx-auto max-w-7xl rounded-2xl border border-white/10 bg-slate-950/95 px-4 py-4 backdrop-blur-2xl shadow-2xl md:hidden text-white animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col gap-1.5">
           {/* Mobile Drawer Brand Header */}
-          <div className="flex items-center gap-2.5 px-3 py-2 mb-2 pb-3 border-b border-slate-100">
-            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-white p-1 shadow-2xs border border-slate-200">
+          <div className="flex items-center gap-2.5 px-3 py-2 mb-2 pb-3 border-b border-white/10">
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 p-1 shadow-2xs border border-white/15">
               <Image
                 src="/logo-icon.png"
                 alt="Master App"
                 width={32}
                 height={32}
-                className="h-full w-full object-contain"
+                className="h-full w-full object-contain drop-shadow-sm"
               />
             </div>
             <div>
-              <div className="text-sm font-black text-slate-900">
-                Master <span className="text-[#0052cc]">App</span>
+              <div className="text-sm font-black text-white">
+                Master <span className="text-blue-400">App</span>
               </div>
-              <div className="text-[9px] font-bold tracking-wider uppercase text-[#0052cc]">
+              <div className="text-[9px] font-bold tracking-wider uppercase text-blue-400">
                 One App. All Services.
               </div>
             </div>
@@ -526,7 +526,7 @@ export default function Navbar() {
                   className={mobileLinkClass("/ai-assistant")}
                 >
                   <span className="flex items-center gap-2">
-                    <SparklesIcon className="w-4 h-4 text-blue-600" />
+                    <SparklesIcon className="w-4 h-4 text-blue-400" />
                     <span>AI Assistant</span>
                   </span>
                 </Link>
@@ -554,12 +554,12 @@ export default function Navbar() {
                   <span>Account Settings</span>
                 </Link>
                 <div className="flex items-center justify-between rounded-xl px-4 py-2">
-                  <span className="text-sm font-medium text-slate-700">Notifications</span>
+                  <span className="text-sm font-medium text-slate-300">Notifications</span>
                   <NotificationBell />
                 </div>
                 <button
                   onClick={logoutCustomer}
-                  className="mt-2 w-full rounded-xl border border-red-200 bg-red-50/80 px-4 py-2.5 text-center font-semibold text-red-600 transition hover:bg-red-100"
+                  className="mt-2 w-full rounded-xl border border-red-500/30 bg-red-500/15 px-4 py-2.5 text-center font-semibold text-red-300 transition hover:bg-red-500/25"
                 >
                   Logout
                 </button>
@@ -586,12 +586,12 @@ export default function Navbar() {
                   <Badge count={messageCount} />
                 </Link>
                 <div className="flex items-center justify-between rounded-xl px-4 py-2">
-                  <span className="text-sm font-medium text-slate-700">Notifications</span>
+                  <span className="text-sm font-medium text-slate-300">Notifications</span>
                   <NotificationBell />
                 </div>
                 <button
                   onClick={logoutProvider}
-                  className="mt-2 w-full rounded-xl border border-red-200 bg-red-50/80 px-4 py-2.5 text-center font-semibold text-red-600 transition hover:bg-red-100"
+                  className="mt-2 w-full rounded-xl border border-red-500/30 bg-red-500/15 px-4 py-2.5 text-center font-semibold text-red-300 transition hover:bg-red-500/25"
                 >
                   Logout
                 </button>
@@ -614,7 +614,7 @@ export default function Navbar() {
                   className={mobileLinkClass("/ai-assistant")}
                 >
                   <span className="flex items-center gap-2">
-                    <SparklesIcon className="w-4 h-4 text-blue-600" />
+                    <SparklesIcon className="w-4 h-4 text-blue-400" />
                     <span>AI Assistant</span>
                   </span>
                 </Link>
@@ -625,7 +625,7 @@ export default function Navbar() {
                 >
                   <span>Become a Provider Partner</span>
                 </Link>
-                <div className="mt-3 flex flex-col gap-2 pt-2 border-t border-slate-100">
+                <div className="mt-3 flex flex-col gap-2 pt-2 border-t border-white/10">
                   <a
                     href="/MasterApp.apk"
                     download="MasterApp.apk"
@@ -644,7 +644,7 @@ export default function Navbar() {
                   <Link
                     href="/provider/login"
                     onClick={() => setMenuOpen(false)}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-center font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+                    className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-center font-semibold text-slate-200 shadow-sm transition hover:bg-white/10"
                   >
                     Provider Sign In
                   </Link>

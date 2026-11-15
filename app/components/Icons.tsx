@@ -58,6 +58,7 @@ import {
   CheckCircle,
   List,
   LayoutGrid,
+  Bell,
 } from "lucide-react";
 
 // =======================================================================
@@ -86,6 +87,10 @@ export function MapPinIcon({ className = "w-5 h-5" }: { className?: string }) {
 
 export function ShieldCheckIcon({ className = "w-5 h-5" }: { className?: string }) {
   return <ShieldCheck className={className} strokeWidth={1.8} />;
+}
+
+export function BellIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return <Bell className={className} strokeWidth={1.8} />;
 }
 
 export function BoltIcon({ className = "w-5 h-5" }: { className?: string }) {

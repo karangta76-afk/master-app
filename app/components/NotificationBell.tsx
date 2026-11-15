@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { BellIcon } from "./Icons";
 type NotificationItem = {
   id: string;
   title: string;
@@ -460,12 +461,12 @@ export default function NotificationBell() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="relative flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-xl shadow-sm hover:bg-gray-50"
+        className="relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-white/15 bg-white/10 text-slate-200 shadow-sm transition hover:bg-white/15 hover:text-white"
         aria-label="Notifications"
       >
-        🔔
+        <BellIcon className="h-4 w-4 sm:h-5 sm:w-5 text-slate-200" />
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 min-w-[20px] rounded-full bg-red-600 px-1.5 py-0.5 text-center text-[11px] font-bold text-white">
+          <span className="absolute -right-1 -top-1 min-w-[20px] rounded-full bg-red-600 px-1.5 py-0.5 text-center text-[10px] font-bold text-white shadow-xs">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}

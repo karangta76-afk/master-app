@@ -68,4 +68,5 @@ declare module "lucide-react" {
   export const Layers: LucideIcon;
   export const List: LucideIcon;
   export const LayoutGrid: LucideIcon;
+  export const Bell: LucideIcon;
 }
