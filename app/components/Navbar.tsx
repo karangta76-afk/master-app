@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import NotificationBell from "./NotificationBell";
@@ -207,24 +208,31 @@ export default function Navbar() {
         {/* BRAND LOGO */}
         <Link
           href="/"
-          className="group flex items-center gap-3 transition-opacity hover:opacity-95"
+          className="group flex items-center gap-2.5 transition-opacity hover:opacity-95"
           onClick={() => setMenuOpen(false)}
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-700 text-xl font-bold text-white shadow-md shadow-blue-600/25 transition-transform duration-300 group-hover:scale-105">
-            M
+          <div className="relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white p-1 shadow-xs border border-slate-200/90 transition-transform duration-300 group-hover:scale-105">
+            <Image
+              src="/logo-icon.png"
+              alt="Master App Logo"
+              width={42}
+              height={42}
+              priority
+              className="h-full w-full object-contain"
+            />
           </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-lg font-extrabold tracking-tight text-slate-900">
-                Master App
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5 leading-none">
+              <span className="text-lg font-black tracking-tight text-slate-900">
+                Master <span className="text-[#0052cc]">App</span>
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200/60">
-                <span className="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-extrabold text-amber-700 border border-amber-200/80 shadow-2xs">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#f59e0b]"></span>
                 PRO
               </span>
             </div>
-            <div className="text-[11px] font-medium text-slate-500">
-              Verified Local Services
+            <div className="mt-1 text-[10px] font-extrabold tracking-wider uppercase text-[#0052cc]">
+              One App. All Services.
             </div>
           </div>
         </Link>
@@ -420,6 +428,26 @@ export default function Navbar() {
       {!pathname.startsWith("/admin") && menuOpen && (
         <div className="mt-2 mx-auto max-w-7xl rounded-2xl border border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur-xl shadow-xl md:hidden animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col gap-1.5">
+          {/* Mobile Drawer Brand Header */}
+          <div className="flex items-center gap-2.5 px-3 py-2 mb-2 pb-3 border-b border-slate-100">
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-white p-1 shadow-2xs border border-slate-200">
+              <Image
+                src="/logo-icon.png"
+                alt="Master App"
+                width={32}
+                height={32}
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <div>
+              <div className="text-sm font-black text-slate-900">
+                Master <span className="text-[#0052cc]">App</span>
+              </div>
+              <div className="text-[9px] font-bold tracking-wider uppercase text-[#0052cc]">
+                One App. All Services.
+              </div>
+            </div>
+          </div>
             {/* ADMIN MOBILE */}
             {isAdmin && (
               <>
@@ -593,7 +621,7 @@ export default function Navbar() {
                   <Link
                     href="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="w-full rounded-xl bg-blue-600 px-4 py-2.5 text-center font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                    className="w-full rounded-xl bg-[#0052cc] px-4 py-2.5 text-center font-semibold text-white shadow-sm transition hover:bg-[#003e99]"
                   >
                     Customer Sign In
                   </Link>

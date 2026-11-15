@@ -2328,14 +2328,14 @@ function ServicesPageContent() {
       ========================================= */}
       <section className="relative overflow-hidden bg-slate-950 px-4 py-14 text-white sm:py-20">
         {/* AMBIENT RADIAL LIGHTING */}
-        <div className="pointer-events-none absolute -top-40 left-1/2 h-[450px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-blue-600/25 via-indigo-600/20 to-cyan-500/20 blur-[130px]" />
+        <div className="pointer-events-none absolute -top-40 left-1/2 h-[450px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-[#0052cc]/30 via-indigo-600/20 to-[#f59e0b]/25 blur-[130px]" />
         <div className="pointer-events-none absolute -bottom-20 right-10 h-72 w-72 rounded-full bg-indigo-500/10 blur-[100px]" />
 
         <div className="relative mx-auto max-w-6xl text-center">
           {/* MICRO-EYEBROW PILL */}
           <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-blue-300 backdrop-blur-md shadow-[0_0_20px_rgba(59,130,246,0.2)]">
             <SparklesIcon className="h-4 w-4 text-cyan-400 animate-pulse" />
-            <span>Master App Marketplace</span>
+            <span className="tracking-widest uppercase font-extrabold text-amber-300">ONE APP. ALL SERVICES.</span>
           </div>
 
           <h1 className="mt-5 text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-balance">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -316,10 +317,20 @@ export default function CustomerRegisterPage() {
         <div className="overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-7 shadow-xl ring-1 ring-slate-900/5 sm:p-9">
           {/* Header */}
           <div className="text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-700 text-xl font-bold text-white shadow-md shadow-blue-600/25">
-              M
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white p-1.5 shadow-md border border-slate-200">
+              <Image
+                src="/logo-icon.png"
+                alt="Master App Logo"
+                width={52}
+                height={52}
+                priority
+                className="h-full w-full object-contain"
+              />
             </div>
-            <h1 className="mt-5 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+            <div className="mt-3 text-[10px] font-extrabold tracking-widest uppercase text-[#0052cc]">
+              ONE APP. ALL SERVICES.
+            </div>
+            <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
               {step === 1 ? "Create Customer Account" : "Verify Your Account"}
             </h1>
             <p className="mt-2 text-xs text-slate-500 sm:text-sm">

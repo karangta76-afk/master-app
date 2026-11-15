@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -64,7 +65,12 @@ export default function CustomerSidebar() {
       <aside className="fixed left-0 top-16 z-40 hidden h-[calc(100vh-64px)] w-64 border-r border-slate-200/80 bg-white lg:block">
         <div className="flex h-full flex-col p-4">
           <div className="mb-4 rounded-2xl border border-slate-100 bg-slate-50/80 p-3.5">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Customer Account</p>
+            <div className="flex items-center gap-2.5 mb-1">
+              <div className="relative flex h-7 w-7 items-center justify-center rounded-lg bg-white p-0.5 shadow-2xs border border-slate-200">
+                <Image src="/logo-icon.png" alt="Logo" width={24} height={24} className="object-contain" />
+              </div>
+              <p className="text-[9px] font-extrabold tracking-wider uppercase text-[#0052cc]">One App. All Services.</p>
+            </div>
             <p className="mt-0.5 truncate text-sm font-extrabold text-slate-900">
               {customer.name || "My Account"}
             </p>

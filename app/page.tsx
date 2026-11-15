@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
@@ -2303,14 +2304,14 @@ function HomePageContent() {
       ========================================= */}
       <section className="relative overflow-hidden bg-slate-950 px-4 py-20 text-white sm:py-28 bg-subtle-grid-dark">
         {/* Luxury Multi-Color Ambient Radial Orbs */}
-        <div className="pointer-events-none absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-blue-600/20 blur-[140px]" />
-        <div className="pointer-events-none absolute top-10 right-1/4 h-[400px] w-[400px] rounded-full bg-indigo-600/20 blur-[130px]" />
+        <div className="pointer-events-none absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-[#0052cc]/25 blur-[140px]" />
+        <div className="pointer-events-none absolute top-10 right-1/4 h-[400px] w-[400px] rounded-full bg-[#f59e0b]/20 blur-[130px]" />
         <div className="pointer-events-none absolute -bottom-20 left-1/2 -translate-x-1/2 h-[350px] w-[600px] rounded-full bg-cyan-500/10 blur-[120px]" />
         
         <div className="relative mx-auto max-w-6xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-400/25 bg-blue-500/10 px-4 py-1.5 text-xs font-semibold text-blue-300 backdrop-blur-xl shadow-xs">
             <SparklesIcon className="w-3.5 h-3.5 text-blue-400" />
-            <span className="tracking-wide uppercase text-[11px] font-bold">India&apos;s Trusted On-Demand Services Network</span>
+            <span className="tracking-widest uppercase text-[11px] font-extrabold text-amber-300">ONE APP. ALL SERVICES.</span>
           </div>
 
           <h1 className="mx-auto max-w-4xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl leading-[1.12]">
@@ -3328,12 +3329,23 @@ function HomePageContent() {
             {/* BRAND COLUMN */}
             <div>
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-lg font-bold text-white shadow-sm shadow-blue-600/20">
-                  M
+                <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white p-1 shadow-xs border border-slate-200/90">
+                  <Image
+                    src="/logo-icon.png"
+                    alt="Master App Logo"
+                    width={36}
+                    height={36}
+                    className="h-full w-full object-contain"
+                  />
                 </div>
-                <span className="text-lg font-bold tracking-tight text-slate-900">
-                  Master App
-                </span>
+                <div>
+                  <span className="text-lg font-black tracking-tight text-slate-900">
+                    Master <span className="text-[#0052cc]">App</span>
+                  </span>
+                  <div className="text-[10px] font-extrabold tracking-wider uppercase text-[#0052cc]">
+                    ONE APP. ALL SERVICES.
+                  </div>
+                </div>
               </div>
               <p className="mt-3 text-xs text-slate-500 leading-relaxed">
                 India&apos;s trusted local services marketplace connecting certified technicians with homeowners and businesses.
