@@ -387,6 +387,15 @@ export default function Navbar() {
                 >
                   Partner With Us
                 </Link>
+                <a
+                  href="/MasterApp.apk"
+                  download="MasterApp.apk"
+                  title="Download Master App for Android"
+                  className="flex items-center gap-1.5 rounded-xl border border-emerald-200/90 bg-emerald-50/80 px-3 py-2 text-xs font-bold text-emerald-800 shadow-2xs transition hover:bg-emerald-100 hover:border-emerald-300 active:scale-95"
+                >
+                  <span className="text-sm">🤖</span>
+                  <span>Android App</span>
+                </a>
                 <div className="ml-2 flex items-center gap-2">
                   <Link
                     href="/login"
@@ -618,6 +627,14 @@ export default function Navbar() {
                   <span>Become a Provider Partner</span>
                 </Link>
                 <div className="mt-3 flex flex-col gap-2 pt-2 border-t border-slate-100">
+                  <a
+                    href="/MasterApp.apk"
+                    download="MasterApp.apk"
+                    className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 px-4 py-2.5 text-center text-xs font-extrabold text-white shadow-sm transition hover:brightness-105 active:scale-98"
+                  >
+                    <span>🤖</span>
+                    <span>Download Official Android App (.apk)</span>
+                  </a>
                   <Link
                     href="/login"
                     onClick={() => setMenuOpen(false)}

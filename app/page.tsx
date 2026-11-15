@@ -3376,6 +3376,7 @@ function HomePageContent() {
                 Customers
               </h5>
               <ul className="mt-3 space-y-2 text-xs text-slate-600">
+                <li><a href="/MasterApp.apk" download="MasterApp.apk" className="font-bold text-emerald-600 hover:text-emerald-700 transition flex items-center gap-1"><span>🤖</span><span>Download Android App (.apk)</span></a></li>
                 <li><Link href="/services" className="hover:text-blue-600 transition">Browse All Services</Link></li>
                 <li><Link href="/ai-assistant" className="hover:text-blue-600 transition">AI Service Diagnostician</Link></li>
                 <li><Link href="/bookings" className="hover:text-blue-600 transition">My Bookings</Link></li>
