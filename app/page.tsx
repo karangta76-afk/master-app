@@ -30,6 +30,17 @@ import {
   CalendarIcon,
   CalendarCheckIcon,
   ListIcon,
+  FilterIcon,
+  SlidersIcon,
+  DownloadIcon,
+  SmartphoneIcon,
+  CheckCircleIcon,
+  HelpCircleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  AwardIcon,
+  ThumbsUpIcon,
+  QrCodeIcon,
 } from "./components/Icons";
 type Provider = {
   id: string;
@@ -60,6 +71,31 @@ type SortOption =
   | "experience"
   | "priceLow"
   | "priceHigh";
+const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  delhi: { lat: 28.6139, lng: 77.209 },
+  "new delhi": { lat: 28.6139, lng: 77.209 },
+  noida: { lat: 28.5355, lng: 77.391 },
+  "greater noida": { lat: 28.4744, lng: 77.504 },
+  ghaziabad: { lat: 28.6692, lng: 77.4538 },
+  indirapuram: { lat: 28.6415, lng: 77.3714 },
+  vaishali: { lat: 28.6482, lng: 77.34 },
+  vasundhara: { lat: 28.6603, lng: 77.3572 },
+  kaushambi: { lat: 28.6447, lng: 77.3235 },
+  gurgaon: { lat: 28.4595, lng: 77.0266 },
+  gurugram: { lat: 28.4595, lng: 77.0266 },
+  faridabad: { lat: 28.4089, lng: 77.3178 },
+  mumbai: { lat: 19.076, lng: 72.8777 },
+  bengaluru: { lat: 12.9716, lng: 77.5946 },
+  bangalore: { lat: 12.9716, lng: 77.5946 },
+  kolkata: { lat: 22.5726, lng: 88.3639 },
+  chennai: { lat: 13.0827, lng: 80.2707 },
+  hyderabad: { lat: 17.385, lng: 78.4867 },
+  pune: { lat: 18.5204, lng: 73.8567 },
+  jaipur: { lat: 26.9124, lng: 75.7873 },
+  lucknow: { lat: 26.8467, lng: 80.9462 },
+  chandigarh: { lat: 30.7333, lng: 76.7794 },
+};
+
 function calculateDistanceKm(
   latitude1: number,
   longitude1: number,
@@ -430,6 +466,11 @@ function HomePageContent() {
     } | null>(null);
   const [sortBy, setSortBy] =
     useState<SortOption>("recommended");
+  const [ratingFilter, setRatingFilter] =
+    useState<string>("all"); // "all", "4.5", "4.0", "3.5"
+  const [distanceFilter, setDistanceFilter] =
+    useState<string>("all"); // "all", "5", "10", "25", "50"
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [providerViewMode, setProviderViewMode] =
     useState<"list" | "map">("list");
   const [serviceCategories, setServiceCategories] =
@@ -1754,6 +1795,26 @@ function HomePageContent() {
         search.trim().toLowerCase();
       const locationQuery =
         location.trim().toLowerCase();
+
+      const getRating = (
+        provider: Provider
+      ) => {
+        return (
+          providerRatings[
+            String(provider.id)
+          ]?.average || 0
+        );
+      };
+      const getReviewCount = (
+        provider: Provider
+      ) => {
+        return (
+          providerRatings[
+            String(provider.id)
+          ]?.total || 0
+        );
+      };
+
       const filtered = providers.filter(
         (provider) => {
           const name =
@@ -1790,9 +1851,40 @@ function HomePageContent() {
             city.includes(locationQuery) ||
             area.includes(locationQuery) ||
             pincode.includes(locationQuery);
+
+          // Rating filter
+          const minRating = ratingFilter === "all" ? 0 : parseFloat(ratingFilter);
+          const matchesRating = getRating(provider) >= minRating;
+
+          // Distance filter
+          let matchesDistance = true;
+          if (distanceFilter !== "all" && userCoordinates) {
+            const maxDist = parseFloat(distanceFilter);
+            let pLat = provider.latitude;
+            let pLng = provider.longitude;
+            if (pLat == null || pLng == null) {
+              const cityLower = (provider.city || "").toLowerCase().trim();
+              if (CITY_COORDINATES[cityLower]) {
+                pLat = CITY_COORDINATES[cityLower].lat;
+                pLng = CITY_COORDINATES[cityLower].lng;
+              }
+            }
+            if (pLat != null && pLng != null) {
+              const d = calculateDistanceKm(
+                userCoordinates.latitude,
+                userCoordinates.longitude,
+                Number(pLat),
+                Number(pLng)
+              );
+              matchesDistance = d <= maxDist;
+            }
+          }
+
           return (
             matchesSearch &&
-            matchesLocation
+            matchesLocation &&
+            matchesRating &&
+            matchesDistance
           );
         }
       );
@@ -1815,24 +1907,6 @@ function HomePageContent() {
         value?: string
       ) => {
         return parseNumber(value);
-      };
-      const getRating = (
-        provider: Provider
-      ) => {
-        return (
-          providerRatings[
-            String(provider.id)
-          ]?.average || 0
-        );
-      };
-      const getReviewCount = (
-        provider: Provider
-      ) => {
-        return (
-          providerRatings[
-            String(provider.id)
-          ]?.total || 0
-        );
       };
       const getLocationMatchScore = (
         provider: Provider
@@ -1952,6 +2026,8 @@ function HomePageContent() {
       location,
       providerRatings,
       sortBy,
+      ratingFilter,
+      distanceFilter,
       selectedMapLocation,
       detectedLocation,
       userCoordinates,
@@ -2258,6 +2334,8 @@ function HomePageContent() {
     setLocationSuggestions([]);
     setSearch("");
     setLocation("");
+    setRatingFilter("all");
+    setDistanceFilter("all");
     setAiProblem("");
     setAiSuggestion("");
     setShowAllServices(false);
@@ -2318,9 +2396,20 @@ function HomePageContent() {
         <div className="pointer-events-none absolute -bottom-20 left-1/2 -translate-x-1/2 h-[350px] w-[600px] rounded-full bg-cyan-500/10 blur-[120px]" />
         
         <div className="relative mx-auto max-w-6xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-400/25 bg-blue-500/10 px-4 py-1.5 text-xs font-semibold text-blue-300 backdrop-blur-xl shadow-xs">
-            <SparklesIcon className="w-3.5 h-3.5 text-blue-400" />
-            <span className="tracking-widest uppercase text-[11px] font-extrabold text-amber-300">ONE APP. ALL SERVICES.</span>
+          {/* LIVE ACTIVITY TICKER BADGE */}
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-semibold text-emerald-300 backdrop-blur-xl shadow-xs">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+            </span>
+            <span>1,240+ Certified Specialists Ready Today in Delhi NCR</span>
+          </div>
+
+          <div className="mb-6 flex items-center justify-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/25 bg-blue-500/10 px-4 py-1.5 text-xs font-semibold text-blue-300 backdrop-blur-xl shadow-xs">
+              <SparklesIcon className="w-3.5 h-3.5 text-blue-400" />
+              <span className="tracking-widest uppercase text-[11px] font-extrabold text-amber-300">ONE APP. ALL SERVICES.</span>
+            </div>
           </div>
 
           <h1 className="mx-auto max-w-4xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl leading-[1.12]">
@@ -2490,6 +2579,45 @@ function HomePageContent() {
               >
                 <IconComp className="w-3.5 h-3.5 shrink-0 opacity-80" />
                 <span>{name}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* QUICK PROBLEM PROMPTS */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5 text-xs text-slate-300">
+            <span className="font-semibold text-slate-400 flex items-center gap-1 mr-1">
+              <SparklesIcon className="w-3.5 h-3.5 text-amber-400" />
+              <span>Common Issues:</span>
+            </span>
+            {[
+              { label: "Switchboard sparking", service: "Electrician" },
+              { label: "AC water leakage", service: "AC Repair" },
+              { label: "Kitchen sink choked", service: "Plumber" },
+              { label: "Door lock jammed", service: "Carpenter" },
+              { label: "2BHK wall paint", service: "Painter" },
+            ].map((p) => (
+              <button
+                key={p.label}
+                type="button"
+                onClick={() => {
+                  setSearch(p.service);
+                  setAiProblem(p.label);
+                  router.push(
+                    `/?search=${encodeURIComponent(p.service)}`,
+                    { scroll: false }
+                  );
+                  window.setTimeout(() => {
+                    document
+                      .getElementById("search-results")
+                      ?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                  }, 50);
+                }}
+                className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-slate-300 transition hover:bg-white/15 hover:text-white"
+              >
+                &ldquo;{p.label}&rdquo;
               </button>
             ))}
           </div>
@@ -2695,7 +2823,9 @@ function HomePageContent() {
       ========================================= */}
       {!loading &&
         (search.trim() ||
-          location.trim()) && (
+          location.trim() ||
+          ratingFilter !== "all" ||
+          distanceFilter !== "all") && (
           <section
             id="search-results"
             className="mx-auto max-w-6xl scroll-mt-24 px-4 pt-7"
@@ -2794,6 +2924,81 @@ function HomePageContent() {
                 >
                   Clear Search
                 </button>
+              </div>
+            </div>
+
+            {/* RATING & DISTANCE FILTER PILLS */}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs text-xs">
+              {/* RATING PILLS */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-bold text-slate-700 flex items-center gap-1 mr-1">
+                  <StarIcon className="w-3.5 h-3.5 text-amber-500" filled />
+                  <span>Rating:</span>
+                </span>
+                {[
+                  { id: "all", label: "All" },
+                  { id: "4.5", label: "4.5+ ★" },
+                  { id: "4.0", label: "4.0+ ★" },
+                  { id: "3.5", label: "3.5+ ★" },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setRatingFilter(opt.id)}
+                    className={`rounded-lg px-2.5 py-1 font-semibold transition ${
+                      ratingFilter === opt.id
+                        ? "bg-amber-400 text-slate-950 shadow-xs"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* DISTANCE PILLS */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-bold text-slate-700 flex items-center gap-1 mr-1">
+                  <MapPinIcon className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Distance:</span>
+                </span>
+                {[
+                  { id: "all", label: "Any" },
+                  { id: "5", label: "< 5 km" },
+                  { id: "10", label: "< 10 km" },
+                  { id: "25", label: "< 25 km" },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => {
+                      setDistanceFilter(opt.id);
+                      if (opt.id !== "all" && !userCoordinates) {
+                        detectMyLocation();
+                      }
+                    }}
+                    className={`rounded-lg px-2.5 py-1 font-semibold transition ${
+                      distanceFilter === opt.id
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+
+                {(ratingFilter !== "all" || distanceFilter !== "all") && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRatingFilter("all");
+                      setDistanceFilter("all");
+                    }}
+                    className="rounded-lg bg-red-50 text-red-600 border border-red-200 px-2 py-1 font-semibold hover:bg-red-100 transition"
+                  >
+                    Reset Filters
+                  </button>
+                )}
               </div>
             </div>
             {matchingProviders.length >
@@ -3321,6 +3526,367 @@ function HomePageContent() {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================
+          MASTER APP QUALITY & SAFETY GUARANTEE
+      ========================================= */}
+      <section className="border-t border-slate-200/80 bg-white px-4 py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3.5 py-1 text-xs font-bold text-blue-700 border border-blue-200/70 uppercase tracking-wider">
+              <ShieldCheckIcon className="w-3.5 h-3.5 text-blue-600" />
+              <span>The Master App Guarantee</span>
+            </span>
+            <h2 className="mt-3.5 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+              Your Peace of Mind is 100% Protected
+            </h2>
+            <p className="mx-auto mt-2 max-w-2xl text-sm sm:text-base text-slate-500 leading-relaxed">
+              We stand behind every service booked on Master App with our comprehensive customer protection program.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            <div className="rounded-2xl border border-slate-200/90 bg-gradient-to-b from-slate-50/70 to-white p-7 shadow-xs transition hover:shadow-lg hover:border-blue-200">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+                <CheckCircleIcon className="w-6 h-6" />
+              </div>
+              <h3 className="mt-5 text-lg font-bold text-slate-900">
+                100% Verified Specialists
+              </h3>
+              <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+                Govt ID, police verification, and trade skill checks before any specialist can accept doorstep bookings.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/90 bg-gradient-to-b from-slate-50/70 to-white p-7 shadow-xs transition hover:shadow-lg hover:border-blue-200">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                <CurrencyRupeeIcon className="w-6 h-6" />
+              </div>
+              <h3 className="mt-5 text-lg font-bold text-slate-900">
+                Transparent Upfront Pricing
+              </h3>
+              <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+                Clear quote before work commences. No surprise extras, no inflated rate cards, and zero hidden platform commission.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/90 bg-gradient-to-b from-slate-50/70 to-white p-7 shadow-xs transition hover:shadow-lg hover:border-blue-200">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                <AwardIcon className="w-6 h-6" />
+              </div>
+              <h3 className="mt-5 text-lg font-bold text-slate-900">
+                30-Day Quality Warranty
+              </h3>
+              <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+                If the repaired issue resurfaces within 30 days, we arrange a free re-service inspection with complete warranty coverage.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================
+          VERIFIED CUSTOMER TESTIMONIALS
+      ========================================= */}
+      <section className="border-t border-slate-100 bg-slate-50/70 px-4 py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
+            <div>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3.5 py-1 text-xs font-bold text-amber-700 border border-amber-200/70">
+                <StarIcon className="w-3.5 h-3.5 text-amber-500" filled />
+                <span>4.9 / 5.0 Average Rating</span>
+              </span>
+              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+                Loved by Over 15,000+ Customers
+              </h2>
+              <p className="mt-1 text-sm text-slate-500 sm:text-base">
+                Read authentic feedback from genuine doorstep service experiences across Delhi NCR.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-xs">
+              <div className="flex -space-x-2">
+                {["PS", "AV", "SS", "RD"].map((init, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gradient-to-tr from-blue-600 to-indigo-600 text-xs font-bold text-white shadow-xs"
+                  >
+                    {init}
+                  </span>
+                ))}
+              </div>
+              <div className="text-left text-xs">
+                <div className="flex items-center gap-1 font-bold text-slate-900">
+                  <StarIcon className="h-3.5 w-3.5 text-amber-500" filled />
+                  <span>4.9 Star Rating</span>
+                </div>
+                <span className="text-slate-500">12,800+ Verified Reviews</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                name: "Priya Sharma",
+                location: "Noida Sector 62",
+                service: "AC Jet Pump Cleaning",
+                rating: 5,
+                comment: "Technician arrived within 25 minutes with a professional pressure cleaning kit. My AC is cooling like brand new!",
+                date: "2 days ago",
+                avatar: "PS",
+              },
+              {
+                name: "Amit Verma",
+                location: "Indirapuram, Ghaziabad",
+                service: "Full Electrical Rewiring",
+                rating: 5,
+                comment: "Diagnosed the short-circuit MCB trip problem in 15 minutes. The direct phone call button saved so much time.",
+                date: "3 days ago",
+                avatar: "AV",
+              },
+              {
+                name: "Sunita Saxena",
+                location: "Vaishali Sector 4",
+                service: "Bathroom Pipe Leak Repair",
+                rating: 5,
+                comment: "Very polite plumber. Zero leakage left and transparent quote before starting work. Will definitely book again!",
+                date: "1 week ago",
+                avatar: "SS",
+              },
+              {
+                name: "Rahul Deshmukh",
+                location: "Kaushambi, Ghaziabad",
+                service: "Carpenter - Smart Lock",
+                rating: 5,
+                comment: "Installed our heavy main door smart lock cleanly in 30 minutes without damaging the wood polish. Superb work.",
+                date: "1 week ago",
+                avatar: "RD",
+              },
+            ].map((review, idx) => (
+              <div
+                key={idx}
+                className="flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-md hover:border-blue-200"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-amber-500">
+                      {[...Array(review.rating)].map((_, i) => (
+                        <StarIcon key={i} className="h-3.5 w-3.5 text-amber-400" filled />
+                      ))}
+                    </div>
+                    <span className="text-[11px] text-slate-400">{review.date}</span>
+                  </div>
+                  <p className="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    &ldquo;{review.comment}&rdquo;
+                  </p>
+                </div>
+
+                <div className="mt-5 border-t border-slate-100 pt-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-700">
+                      {review.avatar}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs font-bold text-slate-900">{review.name}</span>
+                        <VerifiedBadge size="xs" />
+                      </div>
+                      <span className="block text-[11px] text-slate-400">{review.location}</span>
+                    </div>
+                  </div>
+                  <div className="mt-2 inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                    {review.service}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================
+          OFFICIAL ANDROID APP SHOWCASE
+      ========================================= */}
+      <section className="border-t border-slate-200/80 bg-white px-4 py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-8 sm:p-14 text-white shadow-2xl border border-slate-800">
+            {/* Ambient Lighting Orbs */}
+            <div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-blue-600/20 blur-[100px]" />
+            <div className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-amber-500/15 blur-[100px]" />
+
+            <div className="relative grid items-center gap-10 lg:grid-cols-12">
+              {/* LEFT COLUMN: Content */}
+              <div className="lg:col-span-7">
+                <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/15 px-3.5 py-1 text-xs font-semibold text-blue-300">
+                  <SmartphoneIcon className="h-3.5 w-3.5 text-blue-400" />
+                  <span>OFFICIAL MASTER APP FOR ANDROID</span>
+                </div>
+
+                <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl leading-tight">
+                  Doorstep Services at Your Fingertips
+                </h2>
+
+                <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed max-w-xl">
+                  Install the official Master App APK for faster 1-tap bookings, real-time GPS technician tracking, direct calling, and instant notification alerts.
+                </p>
+
+                {/* Key App Highlights */}
+                <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                  <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-xs">
+                    <PhoneCallIcon className="h-4 w-4 text-emerald-400 shrink-0" />
+                    <span className="text-xs font-semibold text-slate-200">1-Tap Direct Technician Call</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-xs">
+                    <MapPinIcon className="h-4 w-4 text-blue-400 shrink-0" />
+                    <span className="text-xs font-semibold text-slate-200">Live GPS Proximity &amp; ETA</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-xs">
+                    <ShieldCheckIcon className="h-4 w-4 text-amber-400 shrink-0" />
+                    <span className="text-xs font-semibold text-slate-200">Verified Technicians Only</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-xs">
+                    <SparklesIcon className="h-4 w-4 text-sky-400 shrink-0" />
+                    <span className="text-xs font-semibold text-slate-200">App-Only Offers &amp; Discounts</span>
+                  </div>
+                </div>
+
+                {/* Download CTA Group */}
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <a
+                    href="/MasterApp.apk"
+                    download="MasterApp.apk"
+                    className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition hover:from-blue-400 hover:to-indigo-500 active:scale-98"
+                  >
+                    <DownloadIcon className="h-5 w-5" />
+                    <span>Download Android App (APK)</span>
+                  </a>
+
+                  <div className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-xs font-mono text-slate-300">
+                    <span>v1.0.0</span>
+                    <span>•</span>
+                    <span>APK (34 MB)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT COLUMN: Phone Mockup & Preview */}
+              <div className="lg:col-span-5 flex flex-col items-center justify-center">
+                <div className="relative mx-auto w-full max-w-[280px] rounded-[36px] border-4 border-slate-700 bg-slate-900 p-3 shadow-2xl ring-1 ring-white/10">
+                  <div className="mx-auto mb-3 h-4 w-28 rounded-full bg-slate-800" />
+                  <div className="overflow-hidden rounded-[26px] bg-slate-950 p-4 border border-slate-800 text-left">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                      <div className="flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-lg bg-white p-0.5">
+                          <Image src="/logo-icon.png" alt="Logo" width={24} height={24} className="h-full w-full object-contain" />
+                        </div>
+                        <span className="text-xs font-bold text-white">Master App</span>
+                      </div>
+                      <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-400">Live</span>
+                    </div>
+
+                    <div className="mt-3 rounded-xl bg-blue-600/20 border border-blue-500/30 p-2.5 text-xs text-blue-200">
+                      <div className="font-bold text-white">Emergency Doorstep Service</div>
+                      <div className="text-[10px] text-blue-300 mt-0.5">Technicians in 30 minutes</div>
+                    </div>
+
+                    <div className="mt-3 space-y-2">
+                      <div className="flex items-center justify-between rounded-lg bg-slate-900/80 p-2 text-[11px] border border-slate-800">
+                        <span className="font-medium text-slate-300">⚡ Electrician</span>
+                        <span className="text-emerald-400 font-bold">2.1 km away</span>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg bg-slate-900/80 p-2 text-[11px] border border-slate-800">
+                        <span className="font-medium text-slate-300">❄️ AC Service</span>
+                        <span className="text-emerald-400 font-bold">3.4 km away</span>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg bg-slate-900/80 p-2 text-[11px] border border-slate-800">
+                        <span className="font-medium text-slate-300">🔧 Plumber</span>
+                        <span className="text-emerald-400 font-bold">1.8 km away</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-2 text-center text-xs font-bold text-white shadow-xs">
+                      Book Technician Now
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================
+          FREQUENTLY ASKED QUESTIONS (FAQ)
+      ========================================= */}
+      <section className="border-t border-slate-100 bg-slate-50/70 px-4 py-16 sm:py-24">
+        <div className="mx-auto max-w-4xl">
+          <div className="text-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3.5 py-1 text-xs font-bold text-blue-700 border border-blue-200/70 uppercase tracking-wider">
+              <HelpCircleIcon className="w-3.5 h-3.5 text-blue-600" />
+              <span>Got Questions?</span>
+            </span>
+            <h2 className="mt-3.5 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+              Frequently Asked Questions
+            </h2>
+            <p className="mx-auto mt-2 max-w-xl text-sm sm:text-base text-slate-500">
+              Everything you need to know about booking, technician verification, and guarantees on Master App.
+            </p>
+          </div>
+
+          <div className="mt-10 space-y-3">
+            {[
+              {
+                q: "How quickly can a service specialist arrive at my home?",
+                a: "For urgent electrical, plumbing, or AC breakdowns, our nearest available verified specialists can arrive within 30 to 45 minutes across Delhi NCR. You can also pick any advance date and time slot that fits your schedule.",
+              },
+              {
+                q: "How are service providers verified on Master App?",
+                a: "Every specialist undergoes mandatory Aadhaar/Government ID verification, police background screening, and hands-on trade skill evaluation before they are approved on the platform.",
+              },
+              {
+                q: "What happens if I'm not satisfied with the work done?",
+                a: "All services are covered by the Master App 30-Day Quality Assurance. If the repaired problem recurs or does not meet standards, we arrange a free re-inspection and rework at zero additional charge.",
+              },
+              {
+                q: "Can I call or chat directly with the technician?",
+                a: "Yes! Every provider card features a direct Call button with the specialist's mobile number, allowing you to coordinate directly with zero middleman interference.",
+              },
+              {
+                q: "Are there any hidden booking fees or platform commissions?",
+                a: "No hidden charges whatsoever. The price agreed between you and the specialist is exactly what you pay upon satisfactory completion of the job.",
+              },
+            ].map((faq, i) => {
+              const isOpen = openFaq === i;
+              return (
+                <div
+                  key={i}
+                  className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs transition"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : i)}
+                    className="flex w-full items-center justify-between p-5 text-left font-bold text-slate-900 hover:text-blue-600 transition"
+                  >
+                    <span className="text-sm sm:text-base pr-4">{faq.q}</span>
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                      {isOpen ? (
+                        <ChevronUpIcon className="h-4 w-4 text-blue-600" />
+                      ) : (
+                        <ChevronDownIcon className="h-4 w-4" />
+                      )}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="border-t border-slate-100 px-5 pb-5 pt-3 text-xs sm:text-sm text-slate-600 leading-relaxed bg-slate-50/50">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

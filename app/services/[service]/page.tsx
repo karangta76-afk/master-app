@@ -16,6 +16,10 @@ import {
   OnlineStatusDot,
   TradeBadgeContainer,
   PhoneCallIcon,
+  CrosshairIcon,
+  FilterIcon,
+  SlidersIcon,
+  CheckIcon,
 } from "../../components/Icons";
 
 type Provider = {
@@ -33,7 +37,61 @@ type Provider = {
   accountStatus?: string;
   rating?: number;
   reviewCount?: number;
+  latitude?: number;
+  longitude?: number;
+  distanceKm?: number;
 };
+
+// Fallback coordinates for prominent cities/districts so distance always computes smoothly
+const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  delhi: { lat: 28.6139, lng: 77.209 },
+  "new delhi": { lat: 28.6139, lng: 77.209 },
+  noida: { lat: 28.5355, lng: 77.391 },
+  "greater noida": { lat: 28.4744, lng: 77.504 },
+  ghaziabad: { lat: 28.6692, lng: 77.4538 },
+  indirapuram: { lat: 28.6415, lng: 77.3714 },
+  vaishali: { lat: 28.6482, lng: 77.34 },
+  vasundhara: { lat: 28.6603, lng: 77.3572 },
+  kaushambi: { lat: 28.6447, lng: 77.3235 },
+  gurgaon: { lat: 28.4595, lng: 77.0266 },
+  gurugram: { lat: 28.4595, lng: 77.0266 },
+  faridabad: { lat: 28.4089, lng: 77.3178 },
+  mumbai: { lat: 19.076, lng: 72.8777 },
+  bengaluru: { lat: 12.9716, lng: 77.5946 },
+  bangalore: { lat: 12.9716, lng: 77.5946 },
+  kolkata: { lat: 22.5726, lng: 88.3639 },
+  chennai: { lat: 13.0827, lng: 80.2707 },
+  hyderabad: { lat: 17.385, lng: 78.4867 },
+  pune: { lat: 18.5204, lng: 73.8567 },
+  jaipur: { lat: 26.9124, lng: 75.7873 },
+  lucknow: { lat: 26.8467, lng: 80.9462 },
+  chandigarh: { lat: 30.7333, lng: 76.7794 },
+};
+
+function calculateDistanceKm(
+  latitude1: number,
+  longitude1: number,
+  latitude2: number,
+  longitude2: number
+) {
+  const earthRadiusKm = 6371;
+  const dLat = ((latitude2 - latitude1) * Math.PI) / 180;
+  const dLon = ((longitude2 - longitude1) * Math.PI) / 180;
+  const lat1 = (latitude1 * Math.PI) / 180;
+  const lat2 = (latitude2 * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.sin(dLon / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+  return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * earthRadiusKm;
+}
+
+function formatDistanceAway(distanceKm?: number) {
+  if (distanceKm == null || !Number.isFinite(distanceKm)) return null;
+  if (distanceKm < 1) {
+    return `${Math.round(distanceKm * 1000)} m away`;
+  }
+  return `${distanceKm.toFixed(1)} km away`;
+}
 
 function normalize(value: string) {
   return value.toLowerCase().trim();
@@ -89,6 +147,63 @@ export default function ServiceProvidersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedCity, setSelectedCity] = useState("all");
+  const [ratingFilter, setRatingFilter] = useState("all"); // "all", "4.5", "4.0", "3.5", "3.0"
+  const [distanceFilter, setDistanceFilter] = useState("all"); // "all", "5", "10", "25", "50"
+  const [sortBy, setSortBy] = useState("recommended"); // "recommended", "rating", "distance", "experience"
+
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+    label?: string;
+  } | null>(null);
+  const [locatingUser, setLocatingUser] = useState(false);
+
+  // Restore saved coordinates from localStorage if available
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("masterUserLocationCoordinates");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Number.isFinite(parsed.latitude) && Number.isFinite(parsed.longitude)) {
+          setUserLocation({
+            latitude: Number(parsed.latitude),
+            longitude: Number(parsed.longitude),
+            label: parsed.address || parsed.city || "Saved Location",
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("Could not parse saved location coordinates:", err);
+    }
+  }, []);
+
+  function handleDetectLocation() {
+    if (typeof window === "undefined" || !navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+    setLocatingUser(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const coords = {
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          label: "Your Current Location",
+        };
+        setUserLocation(coords);
+        setLocatingUser(false);
+        try {
+          localStorage.setItem("masterUserLocationCoordinates", JSON.stringify(coords));
+        } catch (_) {}
+      },
+      (err) => {
+        console.warn("Geolocation error:", err);
+        setLocatingUser(false);
+        alert("Unable to retrieve GPS coordinates. Please check your browser location permission.");
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  }
 
   async function loadProviders() {
     try {
@@ -96,7 +211,7 @@ export default function ServiceProvidersPage() {
       const { data, error } = await supabase
         .from("providers")
         .select(
-          "id,name,mobile,email,service,city,experience,price,address,description,availability,account_status"
+          "id,name,mobile,email,service,city,experience,price,address,description,availability,account_status,latitude,longitude"
         )
         .order("created_at", { ascending: false });
 
@@ -123,20 +238,37 @@ export default function ServiceProvidersPage() {
         return st !== "blocked";
       });
 
-      const mapped: Provider[] = visible.map((item: any) => ({
-        id: String(item.id),
-        name: item.name ?? "Independent Professional",
-        mobile: item.mobile ?? "",
-        email: item.email ?? "",
-        service: item.service ?? "Home Services",
-        city: item.city ?? "",
-        address: item.address ?? "",
-        experience: item.experience ?? "",
-        price: item.price ?? "",
-        description: item.description ?? "",
-        availability: item.availability ?? "Available Today",
-        accountStatus: item.account_status ?? item.accountStatus ?? "Active",
-      }));
+      const mapped: Provider[] = visible.map((item: any) => {
+        let lat = item.latitude != null ? Number(item.latitude) : undefined;
+        let lng = item.longitude != null ? Number(item.longitude) : undefined;
+
+        // Fallback coordinate by recognized city if coordinates were missing
+        if ((lat == null || lng == null) && item.city) {
+          const cityLower = normalize(item.city);
+          const matchedCoord = CITY_COORDINATES[cityLower];
+          if (matchedCoord) {
+            lat = matchedCoord.lat;
+            lng = matchedCoord.lng;
+          }
+        }
+
+        return {
+          id: String(item.id),
+          name: item.name ?? "Independent Professional",
+          mobile: item.mobile ?? "",
+          email: item.email ?? "",
+          service: item.service ?? "Home Services",
+          city: item.city ?? "",
+          address: item.address ?? "",
+          experience: item.experience ?? "",
+          price: item.price ?? "",
+          description: item.description ?? "",
+          availability: item.availability ?? "Available Today",
+          accountStatus: item.account_status ?? item.accountStatus ?? "Active",
+          latitude: lat,
+          longitude: lng,
+        };
+      });
 
       // Enrich with ratings from reviews table if available
       try {
@@ -228,7 +360,31 @@ export default function ServiceProvidersPage() {
     const normalizedTarget = normalizeCompare(rawTarget);
     const searchText = normalize(search);
 
-    return providers.filter((provider) => {
+    const withDistances = providers.map((provider) => {
+      let distanceKm: number | undefined = undefined;
+      if (
+        userLocation &&
+        Number.isFinite(userLocation.latitude) &&
+        Number.isFinite(userLocation.longitude) &&
+        provider.latitude != null &&
+        provider.longitude != null &&
+        Number.isFinite(provider.latitude) &&
+        Number.isFinite(provider.longitude)
+      ) {
+        distanceKm = calculateDistanceKm(
+          userLocation.latitude,
+          userLocation.longitude,
+          provider.latitude,
+          provider.longitude
+        );
+      }
+      return {
+        ...provider,
+        distanceKm,
+      };
+    });
+
+    const filtered = withDistances.filter((provider) => {
       const providerSlug = toSlug(provider.service);
       const providerNorm = normalizeCompare(provider.service);
 
@@ -251,9 +407,53 @@ export default function ServiceProvidersPage() {
         normalize(provider.service).includes(searchText) ||
         normalize(provider.description || "").includes(searchText);
 
-      return serviceMatch && cityMatch && searchMatch;
+      // Rating filter
+      const minRating = ratingFilter === "all" ? 0 : parseFloat(ratingFilter);
+      const ratingMatch = (provider.rating || 0) >= minRating;
+
+      // Distance filter
+      let distanceMatch = true;
+      if (distanceFilter !== "all" && userLocation) {
+        const maxDist = parseFloat(distanceFilter);
+        distanceMatch =
+          provider.distanceKm != null && provider.distanceKm <= maxDist;
+      }
+
+      return serviceMatch && cityMatch && searchMatch && ratingMatch && distanceMatch;
     });
-  }, [providers, rawServiceName, search, selectedCity]);
+
+    // Sorting
+    return filtered.sort((a, b) => {
+      if (sortBy === "rating") {
+        const diff = (b.rating || 0) - (a.rating || 0);
+        if (Math.abs(diff) > 0.001) return diff;
+        return (b.reviewCount || 0) - (a.reviewCount || 0);
+      }
+      if (sortBy === "distance") {
+        const distA = a.distanceKm ?? Number.POSITIVE_INFINITY;
+        const distB = b.distanceKm ?? Number.POSITIVE_INFINITY;
+        return distA - distB;
+      }
+      if (sortBy === "experience") {
+        const parseExp = (val?: string) => {
+          const m = String(val || "").match(/(\d+)/);
+          return m ? parseInt(m[1], 10) : 0;
+        };
+        return parseExp(b.experience) - parseExp(a.experience);
+      }
+      // "recommended" default: prioritized by active status + rating
+      return (b.rating || 0) - (a.rating || 0);
+    });
+  }, [
+    providers,
+    rawServiceName,
+    search,
+    selectedCity,
+    ratingFilter,
+    distanceFilter,
+    sortBy,
+    userLocation,
+  ]);
 
   return (
     <main className="min-h-screen bg-slate-50/60 pb-20">
@@ -301,45 +501,145 @@ export default function ServiceProvidersPage() {
           </div>
 
           {/* SEARCH & FILTERS BAR */}
-          <div className="mt-8 grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-md sm:grid-cols-[1fr_auto_auto]">
-            <div className="relative flex items-center">
-              <SearchIcon className="pointer-events-none absolute left-3.5 h-4 w-4 text-slate-400" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by specialist name, landmark, or skill..."
-                className="w-full rounded-xl border border-slate-700/80 bg-slate-900/90 py-2.5 pr-4 pl-10 text-sm text-white placeholder-slate-400 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20"
-              />
-            </div>
+          <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-3.5 sm:p-4 backdrop-blur-md space-y-3">
+            {/* TOP ROW: Search + City + Sort */}
+            <div className="grid gap-2.5 sm:grid-cols-[1fr_auto_auto]">
+              <div className="relative flex items-center">
+                <SearchIcon className="pointer-events-none absolute left-3.5 h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search by specialist name, landmark, or skill..."
+                  className="w-full rounded-xl border border-slate-700/80 bg-slate-900/90 py-2.5 pr-4 pl-10 text-sm text-white placeholder-slate-400 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20"
+                />
+              </div>
 
-            {availableCities.length > 0 && (
+              {availableCities.length > 0 && (
+                <select
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  className="rounded-xl border border-slate-700/80 bg-slate-900/90 px-3.5 py-2.5 text-xs font-semibold text-slate-200 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 sm:text-sm"
+                >
+                  <option value="all">📍 All Cities</option>
+                  {availableCities.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              )}
+
               <select
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
                 className="rounded-xl border border-slate-700/80 bg-slate-900/90 px-3.5 py-2.5 text-xs font-semibold text-slate-200 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 sm:text-sm"
               >
-                <option value="all">All Cities</option>
-                {availableCities.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
+                <option value="recommended">⚡ Sort: Recommended</option>
+                <option value="rating">⭐ Sort: Highest Rated</option>
+                <option value="distance">📍 Sort: Nearest Distance</option>
+                <option value="experience">💼 Sort: Most Experienced</option>
               </select>
-            )}
+            </div>
 
-            {(search || selectedCity !== "all") && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearch("");
-                  setSelectedCity("all");
-                }}
-                className="rounded-xl border border-slate-700/80 bg-slate-800/90 px-4 py-2 text-xs font-semibold text-slate-300 transition hover:bg-slate-700 hover:text-white"
-              >
-                Reset
-              </button>
-            )}
+            {/* BOTTOM ROW: Rating Filter + Distance Filter Pills */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3 text-xs">
+              {/* RATING FILTER PILLS */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-semibold text-slate-300 flex items-center gap-1 mr-1">
+                  <StarIcon className="w-3.5 h-3.5 text-amber-400" filled />
+                  <span>Rating:</span>
+                </span>
+                {[
+                  { id: "all", label: "All" },
+                  { id: "4.5", label: "4.5+ ★" },
+                  { id: "4.0", label: "4.0+ ★" },
+                  { id: "3.5", label: "3.5+ ★" },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setRatingFilter(opt.id)}
+                    className={`rounded-lg px-2.5 py-1 font-semibold transition ${
+                      ratingFilter === opt.id
+                        ? "bg-amber-400 text-slate-950 shadow-xs"
+                        : "bg-white/10 text-slate-300 hover:bg-white/15 hover:text-white"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* DISTANCE FILTER PILLS & GPS */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-semibold text-slate-300 flex items-center gap-1 mr-1">
+                  <MapPinIcon className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Distance:</span>
+                </span>
+                {[
+                  { id: "all", label: "Any" },
+                  { id: "5", label: "< 5 km" },
+                  { id: "10", label: "< 10 km" },
+                  { id: "25", label: "< 25 km" },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => {
+                      setDistanceFilter(opt.id);
+                      if (opt.id !== "all" && !userLocation) {
+                        handleDetectLocation();
+                      }
+                    }}
+                    className={`rounded-lg px-2.5 py-1 font-semibold transition ${
+                      distanceFilter === opt.id
+                        ? "bg-blue-500 text-white shadow-xs"
+                        : "bg-white/10 text-slate-300 hover:bg-white/15 hover:text-white"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={handleDetectLocation}
+                  disabled={locatingUser}
+                  className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 font-medium transition ${
+                    userLocation
+                      ? "border-blue-400/40 bg-blue-500/20 text-blue-300"
+                      : "border-white/15 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
+                  }`}
+                  title="Detect GPS location for exact distance"
+                >
+                  <CrosshairIcon className={`h-3 w-3 ${locatingUser ? "animate-spin text-blue-400" : "text-blue-300"}`} />
+                  <span>
+                    {locatingUser
+                      ? "Locating..."
+                      : userLocation
+                      ? "📍 GPS Active"
+                      : "Near Me"}
+                  </span>
+                </button>
+
+                {(search || selectedCity !== "all" || ratingFilter !== "all" || distanceFilter !== "all" || sortBy !== "recommended") && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearch("");
+                      setSelectedCity("all");
+                      setRatingFilter("all");
+                      setDistanceFilter("all");
+                      setSortBy("recommended");
+                    }}
+                    className="rounded-lg border border-red-500/30 bg-red-500/20 px-2.5 py-1 text-red-300 transition hover:bg-red-500/30"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -478,6 +778,13 @@ export default function ServiceProvidersPage() {
                         <span className="inline-flex items-center gap-1 text-slate-500">
                           <MapPinIcon className="w-3 h-3 text-slate-400" />
                           <span>{provider.city}</span>
+                        </span>
+                      )}
+
+                      {provider.distanceKm != null && Number.isFinite(provider.distanceKm) && (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 border border-blue-200/80">
+                          <MapPinIcon className="w-2.5 h-2.5 text-blue-600" />
+                          <span>{formatDistanceAway(provider.distanceKm)}</span>
                         </span>
                       )}
                     </div>

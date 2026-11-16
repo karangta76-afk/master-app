@@ -24,7 +24,34 @@ import {
   PhoneCallIcon,
   CalendarCheckIcon,
   ListIcon,
+  FilterIcon,
+  SlidersIcon,
 } from "../components/Icons";
+
+const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  delhi: { lat: 28.6139, lng: 77.209 },
+  "new delhi": { lat: 28.6139, lng: 77.209 },
+  noida: { lat: 28.5355, lng: 77.391 },
+  "greater noida": { lat: 28.4744, lng: 77.504 },
+  ghaziabad: { lat: 28.6692, lng: 77.4538 },
+  indirapuram: { lat: 28.6415, lng: 77.3714 },
+  vaishali: { lat: 28.6482, lng: 77.34 },
+  vasundhara: { lat: 28.6603, lng: 77.3572 },
+  kaushambi: { lat: 28.6447, lng: 77.3235 },
+  gurgaon: { lat: 28.4595, lng: 77.0266 },
+  gurugram: { lat: 28.4595, lng: 77.0266 },
+  faridabad: { lat: 28.4089, lng: 77.3178 },
+  mumbai: { lat: 19.076, lng: 72.8777 },
+  bengaluru: { lat: 12.9716, lng: 77.5946 },
+  bangalore: { lat: 12.9716, lng: 77.5946 },
+  kolkata: { lat: 22.5726, lng: 88.3639 },
+  chennai: { lat: 13.0827, lng: 80.2707 },
+  hyderabad: { lat: 17.385, lng: 78.4867 },
+  pune: { lat: 18.5204, lng: 73.8567 },
+  jaipur: { lat: 26.9124, lng: 75.7873 },
+  lucknow: { lat: 26.8467, lng: 80.9462 },
+  chandigarh: { lat: 30.7333, lng: 76.7794 },
+};
 type Provider = {
   id: string;
   name: string;
@@ -446,6 +473,10 @@ function ServicesPageContent() {
     } | null>(null);
   const [sortBy, setSortBy] =
     useState<SortOption>("recommended");
+  const [ratingFilter, setRatingFilter] =
+    useState<string>("all"); // "all", "4.5", "4.0", "3.5"
+  const [distanceFilter, setDistanceFilter] =
+    useState<string>("all"); // "all", "5", "10", "25", "50"
   const [providerViewMode, setProviderViewMode] =
     useState<"list" | "map">("list");
   const [serviceCategories, setServiceCategories] =
@@ -1774,6 +1805,26 @@ function ServicesPageContent() {
         search.trim().toLowerCase();
       const locationQuery =
         location.trim().toLowerCase();
+
+      const getRating = (
+        provider: Provider
+      ) => {
+        return (
+          providerRatings[
+            String(provider.id)
+          ]?.average || 0
+        );
+      };
+      const getReviewCount = (
+        provider: Provider
+      ) => {
+        return (
+          providerRatings[
+            String(provider.id)
+          ]?.total || 0
+        );
+      };
+
       const filtered = providers.filter(
         (provider) => {
           const name =
@@ -1810,9 +1861,40 @@ function ServicesPageContent() {
             city.includes(locationQuery) ||
             area.includes(locationQuery) ||
             pincode.includes(locationQuery);
+
+          // Rating filter
+          const minRating = ratingFilter === "all" ? 0 : parseFloat(ratingFilter);
+          const matchesRating = getRating(provider) >= minRating;
+
+          // Distance filter
+          let matchesDistance = true;
+          if (distanceFilter !== "all" && userCoordinates) {
+            const maxDist = parseFloat(distanceFilter);
+            let pLat = provider.latitude;
+            let pLng = provider.longitude;
+            if (pLat == null || pLng == null) {
+              const cityLower = (provider.city || "").toLowerCase().trim();
+              if (CITY_COORDINATES[cityLower]) {
+                pLat = CITY_COORDINATES[cityLower].lat;
+                pLng = CITY_COORDINATES[cityLower].lng;
+              }
+            }
+            if (pLat != null && pLng != null) {
+              const d = calculateDistanceKm(
+                userCoordinates.latitude,
+                userCoordinates.longitude,
+                Number(pLat),
+                Number(pLng)
+              );
+              matchesDistance = d <= maxDist;
+            }
+          }
+
           return (
             matchesSearch &&
-            matchesLocation
+            matchesLocation &&
+            matchesRating &&
+            matchesDistance
           );
         }
       );
@@ -1835,24 +1917,6 @@ function ServicesPageContent() {
         value?: string
       ) => {
         return parseNumber(value);
-      };
-      const getRating = (
-        provider: Provider
-      ) => {
-        return (
-          providerRatings[
-            String(provider.id)
-          ]?.average || 0
-        );
-      };
-      const getReviewCount = (
-        provider: Provider
-      ) => {
-        return (
-          providerRatings[
-            String(provider.id)
-          ]?.total || 0
-        );
       };
       const getLocationMatchScore = (
         provider: Provider
@@ -1972,6 +2036,8 @@ function ServicesPageContent() {
       location,
       providerRatings,
       sortBy,
+      ratingFilter,
+      distanceFilter,
       selectedMapLocation,
       detectedLocation,
       userCoordinates,
@@ -2264,8 +2330,8 @@ function ServicesPageContent() {
     const queryString =
       params.toString();
     const targetUrl = queryString
-      ? `/?${queryString}`
-      : "/";
+      ? `/services?${queryString}`
+      : "/services";
     router.push(targetUrl, { scroll: false });
     window.setTimeout(() => {
       document
@@ -2278,11 +2344,13 @@ function ServicesPageContent() {
     setLocationSuggestions([]);
     setSearch("");
     setLocation("");
+    setRatingFilter("all");
+    setDistanceFilter("all");
     setAiProblem("");
     setAiSuggestion("");
     setShowAllServices(false);
     setSortBy("recommended");
-    router.push("/", { scroll: false });
+    router.push("/services", { scroll: false });
   };
   /*
    * ==========================================
@@ -2640,7 +2708,9 @@ function ServicesPageContent() {
       ========================================= */}
       {!loading &&
         (search.trim() ||
-          location.trim()) && (
+          location.trim() ||
+          ratingFilter !== "all" ||
+          distanceFilter !== "all") && (
           <section
             id="search-results"
             className="mx-auto max-w-6xl scroll-mt-24 px-4 pt-7"
@@ -2737,6 +2807,81 @@ function ServicesPageContent() {
                 >
                   Clear Search
                 </button>
+              </div>
+            </div>
+
+            {/* RATING & DISTANCE FILTER PILLS */}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/90 bg-white p-3 shadow-xs text-xs">
+              {/* RATING PILLS */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-bold text-slate-700 flex items-center gap-1 mr-1">
+                  <StarIcon className="w-3.5 h-3.5 text-amber-500" filled />
+                  <span>Rating:</span>
+                </span>
+                {[
+                  { id: "all", label: "All" },
+                  { id: "4.5", label: "4.5+ ★" },
+                  { id: "4.0", label: "4.0+ ★" },
+                  { id: "3.5", label: "3.5+ ★" },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setRatingFilter(opt.id)}
+                    className={`rounded-lg px-2.5 py-1 font-semibold transition ${
+                      ratingFilter === opt.id
+                        ? "bg-amber-400 text-slate-950 shadow-xs"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* DISTANCE PILLS */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-bold text-slate-700 flex items-center gap-1 mr-1">
+                  <MapPinIcon className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Distance:</span>
+                </span>
+                {[
+                  { id: "all", label: "Any" },
+                  { id: "5", label: "< 5 km" },
+                  { id: "10", label: "< 10 km" },
+                  { id: "25", label: "< 25 km" },
+                ].map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => {
+                      setDistanceFilter(opt.id);
+                      if (opt.id !== "all" && !userCoordinates) {
+                        detectMyLocation();
+                      }
+                    }}
+                    className={`rounded-lg px-2.5 py-1 font-semibold transition ${
+                      distanceFilter === opt.id
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+
+                {(ratingFilter !== "all" || distanceFilter !== "all") && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRatingFilter("all");
+                      setDistanceFilter("all");
+                    }}
+                    className="rounded-lg bg-red-50 text-red-600 border border-red-200 px-2 py-1 font-semibold hover:bg-red-100 transition"
+                  >
+                    Reset Filters
+                  </button>
+                )}
               </div>
             </div>
             {matchingProviders.length >
